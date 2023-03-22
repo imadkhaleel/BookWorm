@@ -1,0 +1,22 @@
+[
+    { 
+        "_id": 1, 
+        "memberType": 0, 
+        "name": "Visitor"
+    },
+    { 
+        "_id": 2, 
+        "memberType": 1, 
+        "name": "Member"
+    },
+    {
+         "_id": 3, 
+         "memberType": 2, 
+         "name": "Curator"
+    },
+    {
+         "_id": 4, 
+         "memberType": 3, 
+         "name": "Admin"
+    }
+  ]
