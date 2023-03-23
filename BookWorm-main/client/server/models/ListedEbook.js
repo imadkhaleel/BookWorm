@@ -5,17 +5,17 @@ const { formatModel } = require("./Format");
 
 const listedEbookSchema = new mongoose.Schema({
   creator: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.ObjectId,
     required: true,
-    ref: authorModel,
+    ref: "author",
   },
   ebook: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.ObjectId,
     required: true,
-    ref: ebookModel,
+    ref: "ebook",
   },
   formats: {
-    type: [{ type: mongoose.SchemaTypes.ObjectId, ref: formatModel }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "format" }],
     default: [],
   },
 });

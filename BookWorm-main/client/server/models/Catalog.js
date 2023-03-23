@@ -3,7 +3,7 @@ const { eBookModel } = require("./Ebook");
 
 const catalogSchema = new mongoose.Schema({
   ebooks: {
-    type: [{ type: mongoose.SchemaTypes.ObjectId, ref: eBookModel }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "eBook" }],
     required: true,
     default: []
   },

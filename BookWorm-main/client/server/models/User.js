@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   roles: {
-    type: [mongoose.SchemaTypes.ObjectId],
-    ref: roleModel,
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "role",
     required: true
   },
   dateOfBirth: {
@@ -40,14 +40,14 @@ const userSchema = new mongoose.Schema({
     default: 0,
   },
   checked_out_books: {
-    type: [mongoose.SchemaTypes.ObjectId],
-    ref: eBookModel
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "eBook"
   },
   status: {
     type: String,
     default: "Normal" //String changes to locked after loginAttempts exceeds 5
   },
-  refreshToken: String
+  refreshToken: String,
 });
 
 

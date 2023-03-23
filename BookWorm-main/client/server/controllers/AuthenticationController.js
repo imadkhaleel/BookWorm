@@ -18,7 +18,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { userModel } = require("../models/User");
 const { roleModel } = require("../models/Role");
-const { getRolesFromJWT } = require("../middleware");
+const { getRolesFromJWT } = require("../middleware/VerifyRoles");
+const { authorModel } = require("../models/Author");
 
 // ====================================
 // Endpoints for Registration and Login

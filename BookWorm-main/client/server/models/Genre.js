@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const genreSchema = new mongoose.Schema({
     eBooks: {
-        type: [{ type: mongoose.SchemaTypes.ObjectId, ref: "eBook" }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: "eBook" }],
         default: [],
     },
     name: {

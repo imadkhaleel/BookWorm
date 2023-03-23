@@ -10,17 +10,18 @@ const authorSchema = new mongoose.Schema({
     unique: true,
   },
   user: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: userModel,
+    ref: "user",
   },
   genre: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: genreModel,
+    ref: "genre",
   },
   ebooks: {
-    type: [{ type: mongoose.SchemaTypes.ObjectId, ref: eBookModel }],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "eBook",
   },
 });
 

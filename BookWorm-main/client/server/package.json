@@ -2,7 +2,7 @@
     "name": "BookWorm",
     "version": "0.0.1",
     "description": "Free online library with eBooks",
-    "icon": "./server/public/Marsic.jpg",
+    "icon": "./server/public/bookworm_logo.jpg",
     "author": {
         "name": "AJ and Joe",
         "email": "heartofeldovia@play.it"

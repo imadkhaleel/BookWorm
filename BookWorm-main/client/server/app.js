@@ -63,4 +63,4 @@ app.listen(port, () => {
 app.use("/", require("./routes/api/Root"));
 //app.use("/catalog", require("./routes/api/Catalog.js"));
 app.use("/login", require("./routes/api/Login"));
-app.use("/logout", require("./routes/api/Logout"));
+//app.use("/logout", require("./routes/api/Logout")); //Add logout later

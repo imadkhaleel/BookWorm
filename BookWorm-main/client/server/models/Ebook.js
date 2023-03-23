@@ -4,9 +4,9 @@ const authorModel = require("./Author");
 const userModel = require("./User");
 const eBookSchema = new mongoose.Schema({
   author: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: authorModel,
+    ref: "author",
   },
   publisher: {
     type: String,
@@ -14,8 +14,8 @@ const eBookSchema = new mongoose.Schema({
     default: "",
   },
   genre: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: genre,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "genre",
     required: true,
   },
   title: {
@@ -52,8 +52,8 @@ const eBookSchema = new mongoose.Schema({
     default: "pdf",
   },
   holdQueue: {
-    type: [mongoose.SchemaTypes.ObjectId],
-    ref: userModel
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "user"
   }
 });
 

@@ -3,7 +3,7 @@ const { ebookModel } = require("./ebook");
 
 const formatSchema = new mongoose.Schema({
   ebook: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: ebookModel,
   },
