@@ -9,6 +9,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const { corsOptions } = require("./config/CorsOptions");
 const connectDB = require("./config/DbConnection");
 const app = express();
+const bodyParser = require('body-parser');
 
 
 // Set up HTML
@@ -64,3 +65,39 @@ app.use("/", require("./routes/api/Root"));
 //app.use("/catalog", require("./routes/api/Catalog.js"));
 app.use("/login", require("./routes/api/Login"));
 //app.use("/logout", require("./routes/api/Logout")); //Add logout later
+
+/*set up search method: NOTE: Must 
+properly set up with current MongDB
+database - was done hosting on home
+computer. Will update.
+*/
+
+// Set up server and MongoDB connection 
+// const app = express();
+// const port = 3000;
+// const url = 'mongodb://localhost:27017';
+// const dbName = 'my_database';
+// let db;
+
+MongoClient.connect(url, function(err, client) {
+  console.log("Connected successfully to server");
+
+  db = client.db(dbName);
+});
+
+// Define search endpoint
+app.get('/search', function(req, res) {
+  const query = req.query.query;
+
+  // Run search query on MongoDB collection
+  db.collection('my_collection').find({ $text: { $search: query } }).toArray(function(err, results) {
+    if (err) throw err;
+
+    res.send(results);
+  });
+});
+
+// Start server
+// app.listen(port, function() {
+//   console.log(`Server listening on port ${port}`);
+});
