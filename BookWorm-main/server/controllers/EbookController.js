@@ -629,28 +629,54 @@ const Return = async (req,res) => { //eBookToReturn)
 };
 
 
-function CheckOut(eBookToCheckOut){
-
-  if(eBookToCheckOut.availableCopies < 1){
-    console.log("Not enough copies, checkout failed");
+const CheckOut = async (req, res) => {
+  let userCheckingOut = req.user;
+  let eBookToCheckOut = req.eBook;
+  if(!userCheckingOut){
+    return res.status.status(400).json({result:null, message:"Missing User"});
+  }
+  if(!eBookToCheckOut){
+    return res.status.status(400).json({result:null, message:"Missing eBook"});
+  }
+  try{
+    if(eBookToCheckOut.availableCopies < 1){
+      console.log("Not enough copies, checkout failed");
+      return res.status.status(401).json({result:null, message:"Not enough copies, checkout failed"});
+    }
+    if(userCheckingOut.checked_out_books.length >= 5){
+      console.log("Too many books checked out, checkout failed");
+      return res.status.status(401).json({result:null, message:"Too many books checked out, checkout failed"});
+    }
+    eBookToCheckOut.availableCopies--;
+    userCheckingOut.checked_out_books.push(eBookToCheckOut);
+    return res.status.status(200).json({result:null, message:"Checkout Success!"});
+  }
+  catch (err) {
+    console.log("Error Holding Book");
     return;
   }
-  if(self.checked_out_books >= 5){
-    console.log("Too many books checked out, checkout failed");
+}
+
+const Hold = async (req, res) => {
+  let userHolding = req.user;
+  let eBookToHold = req.eBook;
+  if(!userHolding){
+    return res.status.status(400).json({result:null, message:"Missing User"})
+  }
+  if(!eBookToHold){
+    return res.status.status(400).json({result:null, message:"Missing eBook"})
+  }
+  try{
+    eBookToHold.holdQueue.push(self);
+    console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
     return;
   }
-  eBookToCheckOut.availableCopies--;
-  self.checked_out_books += eBookToCheckOut;
-  return;
-
+  catch (err) {
+    console.log("Error Holding Book");
+    return;
+  }
 }
 
-function Hold(eBookToHold){
-
-  eBookToHold.holdQueue.push(self);
-  console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
-  return;
-}
 module.exports = {
   populateCatalog,
   get_eBook,
