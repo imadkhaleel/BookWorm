@@ -2,12 +2,11 @@
 const path = require("path");
 
 const mongoose = require("mongoose");
-const { authorModel } = require("../models/author");
 const { genreModel } = require("../models/Genre");
 const { userModel } = require("../models/User");
 const { ebookModel } = require("../models/Ebook");
 const { listedebookModel } = require("../models/ListedEbook");
-const { formatModel } = require("../models/Format");
+//const { formatModel } = require("../models/Format");
 const { authorModel } = require("../models/Author");
 const ROLES_LIST = require("../config/RolesList");
 
@@ -601,28 +600,36 @@ const Return = async (req,res) => { //eBookToReturn)
     ) {
       return res.status(400).json({ result: null, message: "Missing inputs" });
     }
-  positionOfBook = userReturning.checked_out_books.find(eBookToReturn);
-
-  if(positionOfBook == undefined){
-    console.log("You do not currently have that book, return failed");
-    return;
+  let positionOfBook = null;
+  for(let i = 0; i < userReturning.checked_out_books.length; i++){
+      if(userReturning.checked_out_books[i].book._id === eBookToReturn._id){
+        positionOfBook = i;
+        break;
+      }
   }
 
-  eBookToReturn.availableCopies++;
+  if(positionOfBook == null){
+    console.log("You do not currently have that book, return failed");
+    return res.status(400).json({ result: null, message: "You do not currently have that book, return failed" });  
+  }
+
+  //eBookToReturn.availableCopies++;
   userReturning.checked_out_books.splice(positionOfBook, 1);
+  return res.status(200).json({result:"Success", message: "Book Successfully Returned"});
 
   if(!eBookToReturn.holdQueue.isEmpty){
     let userRecievingBook = eBookToReturn.holdQueue.dequeue();
-    userRecievingBook.CheckOut(eBookToReturn);
+    //userRecievingBook.CheckOut(eBookToReturn);
     console.log(userRecievingBook + " recieved " + eBookToReturn);
+    return res.status(200).json({ result: "Success", message: userRecievingBook + " recieved " + eBookToReturn });
   }
 
-  return res.status(200).json({ result: ebookReturned, message: "Success" }); 
+  return res.status(200).json({ result: "ebookReturned" , message: "Success" }); 
 } catch (err) {
   console.log(err);
   return res
       .status(500)
-      .json({ result: null, message: "Error creating ebook" });
+      .json({ result: null, message: "Error Returning ebook" });
 }
 };
 
@@ -631,27 +638,28 @@ const CheckOut = async (req, res) => {
   let userCheckingOut = req.body.user;
   let eBookToCheckOut = req.body.eBook;
   if(!userCheckingOut){
-    return res.status.status(400).json({result:null, message:"Missing User"});
+    return res.status(400).json({result:null, message:"Missing User"});
   }
   if(!eBookToCheckOut){
-    return res.status.status(400).json({result:null, message:"Missing eBook"});
+    return res.status(400).json({result:null, message:"Missing eBook"});
   }
   try{
     if(eBookToCheckOut.availableCopies < 1){
       console.log("Not enough copies, checkout failed");
-      return res.status.status(401).json({result:null, message:"Not enough copies, checkout failed"});
+      return res.status(401).json({result:null, message:"Not enough copies, checkout failed"});
     }
     if(userCheckingOut.checked_out_books.length >= 5){
       console.log("Too many books checked out, checkout failed");
-      return res.status.status(401).json({result:null, message:"Too many books checked out, checkout failed"});
+      return res.status(401).json({result:null, message:"Too many books checked out, checkout failed"});
     }
     eBookToCheckOut.availableCopies--;
     userCheckingOut.checked_out_books.push(eBookToCheckOut);
-    return res.status.status(200).json({result:null, message:"Checkout Success!"});
+    console.log("Checkout Success");
+    return res.status(200).json({result:null, message:"Checkout Success!"});
   }
   catch (err) {
-    console.log("Error Holding Book");
-    return;
+    console.log("Error checking out book");
+    return res.status(400).json({result:null, message:"Checkout failed"});
   }
 }
 
@@ -659,19 +667,19 @@ const Hold = async (req, res) => {
   let userHolding = req.body.user;
   let eBookToHold = req.body.eBook;
   if(!userHolding){
-    return res.status.status(400).json({result:null, message:"Missing User"})
+    return res.status(400).json({result:null, message:"Missing User"})
   }
   if(!eBookToHold){
-    return res.status.status(400).json({result:null, message:"Missing eBook"})
+    return res.status(400).json({result:null, message:"Missing eBook"})
   }
   try{
-    eBookToHold.holdQueue.push(self);
+    eBookToHold.holdQueue.push(userHolding);
     console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
-    return;
+    return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line."});
   }
   catch (err) {
     console.log("Error Holding Book");
-    return;
+    return res.status(400).json({result:null, message:"Error Holding Book"});
   }
 }
 

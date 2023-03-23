@@ -10,6 +10,8 @@ const { corsOptions } = require("./config/CorsOptions");
 const connectDB = require("./config/DbConnection");
 const app = express();
 const bodyParser = require('body-parser');
+const router = express.Router();
+const EBookController = require("./controllers/EbookController.js");
 
 
 // Set up HTML
@@ -96,6 +98,20 @@ app.get('/search', function(req, res) {
     res.send(results);
   });
 });
+
+app.get('/stuff', (req, res) => res.send('Hello World!, ' + req.body.user + ' sent ' + req.body.eBook));
+app.listen(3001, () => console.log('Example app listening on port 3001!'));
+app.get('/Hold', (req, res) => {
+  EBookController.Hold(req, res);
+});
+app.get('/Return', (req, res) => {
+  EBookController.Return(req, res);
+});
+app.get('/CheckOut', (req, res) => {
+  EBookController.CheckOut(req, res);
+});
+
+
 
 // Start server
 // app.listen(port, function() {

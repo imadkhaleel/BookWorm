@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { ebookModel } = require("./Ebook");
 const { authorModel } = require("./Author");
-const { formatModel } = require("./Format");
+//const { formatModel } = require("./Format");
 
 const listedEbookSchema = new mongoose.Schema({
   creator: {
@@ -14,10 +14,10 @@ const listedEbookSchema = new mongoose.Schema({
     required: true,
     ref: "ebook",
   },
-  formats: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "format" }],
-    default: [],
-  },
+  //formats: {
+  //  type: [{ type: mongoose.Schema.Types.ObjectId, ref: "format" }],
+  //  default: [],
+  //},
 });
 
 module.exports = {
