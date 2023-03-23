@@ -90,8 +90,8 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const canEdit = await userCanEdit(req)
   if (canEdit){
-    let {roles, username, firstName, lastName, email, password, status} = req.body
-    if(!(roles && username && firstName && lastName && email && password && status)){
+    let {roles, username, firstName, lastName, email, password, status, dateOfBirth} = req.body
+    if(!(roles && username && firstName && lastName && email && password && status && dateOfBirth)){
       return res.status(400).json({result: null, message: "All fields required"})
     }
     const verifiedRoles = await verifyRoles(roles)
@@ -107,7 +107,7 @@ const updateUser = async (req, res) => {
       if(!userToUpdate){
         return res.status(400).json({result : null, message: "Invalid user"});
       }
-      const newUser = await userModel.findOneAndUpdate({roles, username, firstName, lastName, email, password, status});
+      const newUser = await userModel.findOneAndUpdate({roles, username, firstName, lastName, email, password, status, dateOfBirth});
       if(newUser){
         return res.status(200).json({result: null, message: "Success updating user"})
       } 
@@ -136,8 +136,8 @@ const updateUserProperties = async (req, res) => {
     catch{
       return res.status(400).json({result : null, message: "Error updating user"})
     }
-    let {roles, username, firstName, lastName, email, password, status} = req.body
-    let roleR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR;
+    let {roles, username, firstName, lastName, email, password, status, dateOfBirth} = req.body
+    let roleR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR, dateOfBirthR;
     if (roles){
       const verifiedRoles = await verifyRoles(roles)
       if(!verifiedRoles){
@@ -189,8 +189,14 @@ const updateUserProperties = async (req, res) => {
     else {
       statusR = userToUpdate.status
     }
+    if (firstName){
+      dateOfBirthR = firstName
+    }
+    else{
+      dateOfBirthR = userToUpdate.dateOfBirth
+    }
     try {
-      const newUser = await userModel.findOneAndUpdate({rolesR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR});
+      const newUser = await userModel.findOneAndUpdate({roleR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR, dateOfBirthR});
       if(newUser){
         return res.status(200).json({result: null, message: "Success updating user"})
       } 
