@@ -593,17 +593,15 @@ const canAccess = async (username, roles, ebookId) => {
 
 const Return = async (req,res) => { //eBookToReturn)
   try {
-    let {
-      user,
-      eBookToReturn,
-    } = req.body;
+    let userReturning = req.body.user;
+    let eBookToReturn = req.body.eBook;
     if (
-        !user ||
+        !userReturning ||
         !eBookToReturn
     ) {
       return res.status(400).json({ result: null, message: "Missing inputs" });
     }
-  positionOfBook = user.checked_out_books.find(eBookToReturn);
+  positionOfBook = userReturning.checked_out_books.find(eBookToReturn);
 
   if(positionOfBook == undefined){
     console.log("You do not currently have that book, return failed");
@@ -611,7 +609,7 @@ const Return = async (req,res) => { //eBookToReturn)
   }
 
   eBookToReturn.availableCopies++;
-  user.checked_out_books.splice(positionOfBook, 1);
+  userReturning.checked_out_books.splice(positionOfBook, 1);
 
   if(!eBookToReturn.holdQueue.isEmpty){
     let userRecievingBook = eBookToReturn.holdQueue.dequeue();
@@ -630,8 +628,8 @@ const Return = async (req,res) => { //eBookToReturn)
 
 
 const CheckOut = async (req, res) => {
-  let userCheckingOut = req.user;
-  let eBookToCheckOut = req.eBook;
+  let userCheckingOut = req.body.user;
+  let eBookToCheckOut = req.body.eBook;
   if(!userCheckingOut){
     return res.status.status(400).json({result:null, message:"Missing User"});
   }
@@ -658,8 +656,8 @@ const CheckOut = async (req, res) => {
 }
 
 const Hold = async (req, res) => {
-  let userHolding = req.user;
-  let eBookToHold = req.eBook;
+  let userHolding = req.body.user;
+  let eBookToHold = req.body.eBook;
   if(!userHolding){
     return res.status.status(400).json({result:null, message:"Missing User"})
   }
