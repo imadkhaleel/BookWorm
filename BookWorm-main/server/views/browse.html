@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"> <!-- dasfjalksdjfkl;asdjfl;asjkdfl;akdjsf;flk-->
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BookWorm</title>
+  <title>Browse</title>
 
   <!-- Favicon Section -->
   <link rel="apple-touch-icon" sizes="180x180" href="public/icon/apple-touch-icon.png">
@@ -25,7 +25,7 @@
 
   <!-- Linked JS -->
   <script src="./js/base.js" defer></script>
-  <script src="./js/forms.js" defer></script>
+  <script src="../../client/browse.js" defer></script>
   <!-- Linked JS -->
 </head>
 <body class="bg-dark">
@@ -34,8 +34,8 @@
       <nav class="navbar navbar-expand-md navbar-dark bg-dark d-flex">
         <a class="navbar-brand" href="#">
           <div class="logo-content d-flex align-items-center">
-            <img src="./public/bookworm_logo.png" alt="Bookworm Logo" class="logo" />
-            <span class="logo-content__text navbar-text d-inline-block m-auto">Bookworm</span>
+            <img src="./public/icon/bookworm_logo.png" alt="Bookworm Logo" class="logo" />
+            <span class="logo-content__text navbar-text d-inline-block m-auto">BookWorm</span>
           </div>
         </a>
         <button 
@@ -77,10 +77,43 @@
     </div>
   </header>
   <main class="min-vh-100 text-bg-dark">
-    this is some text
+    <div class="input-group mx-auto px-5 pb-3 mx-3">
+      <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+      <button type="button" class="btn btn-outline-primary">search</button>
+    </div>
     <div class="container text-light">
-      <div class="row mb-4">
-        <div class="col-12">
+      <div class="row mx-auto">
+        <h2>Browse eBook Listings</h2>
+        <table class="table table-dark table-hover">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col" role="button" key="boo">Book</th>
+                <th scope="col" role="button" key="author">Author</th>
+                <th scope="col" role="button" key="isbn">ISBN</th>
+                <th scopt="col" role="button" key="number of pages">Number of Pages</th>
+              </tr>
+            </thead>
+            <!-- Filler Data -->
+            <tbody>
+              <!-- <tr>
+                <th scope="row">1</th>
+                <td>Atomic Habits</td>
+                <td>James Clear</td>
+                <td>9780735211292</td>
+                <td>306</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>How not to be wrong: The power of mathematical thinking</td>
+                <td>Jordan Ellenburg</td>
+                <td>9781594205224</td>
+                <td>463</td>
+              </tr> -->
+            </tbody>
+          </table>
+
+        <!-- <div class="col-12">
           <div class="card" id="login-card">
             <h2 class="card-title text-center text-bg-light py-3">Login</h2>
             <div class="card-body">
@@ -138,7 +171,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </main>
   <footer>
