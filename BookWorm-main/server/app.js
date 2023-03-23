@@ -75,15 +75,15 @@ computer. Will update.
 // Set up server and MongoDB connection 
 // const app = express();
 // const port = 3000;
-// const url = 'mongodb://localhost:27017';
+//const url = 'mongodb://localhost:27017';
 // const dbName = 'my_database';
 // let db;
 
-MongoClient.connect(url, function(err, client) {
-  console.log("Connected successfully to server");
-
-  db = client.db(dbName);
-});
+//MongoClient.connect(url, function(err, client) {
+//  console.log("Connected successfully to server");
+//
+//  db = client.db(dbName);
+//});
 
 // Define search endpoint
 app.get('/search', function(req, res) {
@@ -100,4 +100,4 @@ app.get('/search', function(req, res) {
 // Start server
 // app.listen(port, function() {
 //   console.log(`Server listening on port ${port}`);
-});
+//});

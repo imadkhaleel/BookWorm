@@ -591,9 +591,19 @@ const canAccess = async (username, roles, ebookId) => {
   return true;
 };
 
-function Return(eBookToReturn){
-
-  positionOfBook = self.checked_out_books.find(eBookToReturn);
+const Return = async (req,res) => { //eBookToReturn)
+  try {
+    let {
+      user,
+      eBookToReturn,
+    } = req.body;
+    if (
+        !user ||
+        !eBookToReturn
+    ) {
+      return res.status(400).json({ result: null, message: "Missing inputs" });
+    }
+  positionOfBook = user.checked_out_books.find(eBookToReturn);
 
   if(positionOfBook == undefined){
     console.log("You do not currently have that book, return failed");
@@ -601,15 +611,23 @@ function Return(eBookToReturn){
   }
 
   eBookToReturn.availableCopies++;
-  self.checked_out_books.splice(positionOfBook, 1);
+  user.checked_out_books.splice(positionOfBook, 1);
 
   if(!eBookToReturn.holdQueue.isEmpty){
     let userRecievingBook = eBookToReturn.holdQueue.dequeue();
     userRecievingBook.CheckOut(eBookToReturn);
     console.log(userRecievingBook + " recieved " + eBookToReturn);
   }
-  return;
+
+  return res.status(200).json({ result: ebookReturned, message: "Success" }); 
+} catch (err) {
+  console.log(err);
+  return res
+      .status(500)
+      .json({ result: null, message: "Error creating ebook" });
 }
+};
+
 
 function CheckOut(eBookToCheckOut){
 
