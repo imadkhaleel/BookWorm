@@ -5,7 +5,7 @@
 // =========================
 const path = require("path");
 const rootDir = path.resolve(__dirname, ".");
-const env = require("dotenv").config({ path: "../" }).parsed;
+const env = require("dotenv").config({ path: `${rootDir}/.env` }).parsed;
 
 if (!env) {
   console.log("Environment variables file not found");
@@ -14,20 +14,28 @@ if (!env) {
 // ==========================
 // General Require Statements
 // ==========================
+
+const mongoose = require("mongoose");
+const { genreModel } = require("../models/Genre");
+const { userModel } = require("../models/User");
+const { ebookModel } = require("../models/Ebook");
+const { listedebookModel } = require("../models/ListedEbook");
+//const { formatModel } = require("../models/Format");
+const { authorModel } = require("../models/Author");
+const ROLES_LIST = require("../config/RolesList");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { userModel } = require("../models/User");
 const { roleModel } = require("../models/Role");
 const { getRolesFromJWT } = require("../middleware/VerifyRoles");
-const { authorModel } = require("../models/Author");
+const bodyParser = require("body-parser");
 
 // ====================================
 // Endpoints for Registration and Login
 // ====================================
 const register = async (req, res) => {
-  const { username, password, firstName, lastName, email, status, roles, dateOfBirth } =
-    req.body;
 
+  const {username, password, firstName, lastName, email, status, roles, dateOfBirth} = req.body
   if (
     !req.body ||
     !password ||
@@ -42,10 +50,11 @@ const register = async (req, res) => {
     res.status(400).json({ message: "All registration fields are required." });
     return;
   }
-  let today = Date.now(); //Validate they are over 18
-  if((today.getFullYear() - dateOfBirth.toTimeString().getFullYear()) <= 18){
-    if(dateOfBirth.getMonth() < today.getMonth()) {
-      if(dateOfBirth.getDay() < today.getDay()) {
+  let today = new Date(Date.now()); //Validate they are over 18
+  let dob = new Date(dateOfBirth);
+  if((today.getFullYear() - dob.getFullYear()) <= 18){
+    if(dob.getMonth() <= today.getMonth()) {
+      if(dob.getDay() < today.getDay()) {
         res.status(400).json({ message: "Must be over 18 to create an account." })
       }
     }
@@ -58,7 +67,7 @@ const register = async (req, res) => {
     // Admins can only be created by other admins
     // Validate that the person attempting to create an admin is an admin
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    if (!authHeader?.startsWith("Requester ")) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({ message: "No authorization header" });
     }
 
@@ -87,14 +96,41 @@ const register = async (req, res) => {
 
     // requested roles to be used for applying roles if valid
     let requestedRoles = [];
-    const foundRoles = await roleModel
-      .find({ name: { $in: requestedRoleStrings } })
-      .exec();
+    let foundRoles = [];
+     // const foundRoles = await roleModel
+     //     .find({ name: { $in: requestedRoleStrings } }).exec();
+    // const foundRoles = await roleModel
+    //     .countDocuments({ name: { $in: requestedRoleStrings } }).exec();
+    // foundRoles.push("Member");
+    // if(requestedRoleStrings.indexOf("Member") >= 0) {
+    //   console.log("member added");
+    //   foundRoles.push("Member");
+    // }
+    for(let i = 0; i < requestedRoleStrings.length; i++){
+      if(requestedRoleStrings.indexOf("Visitor") >= 0) {
+        console.log("Visitor added");
+        foundRoles.push("Visitor");
+
+      }
+      if(requestedRoleStrings.indexOf("Member") >= 0) {
+        console.log("Member added");
+        foundRoles.push("Member");
+      }
+      if(requestedRoleStrings.indexOf("Curator") >= 0) {
+        console.log("curator added");
+        foundRoles.push("Curator");
+
+      }
+      if(requestedRoleStrings.indexOf("Admin") >= 0) {
+        console.log("admin added");
+        foundRoles.push("Admin");
+      }
+    }
     if (!foundRoles || foundRoles.length === 0) {
       return res.status(400).json({ message: "Invalid roles." });
     }
     // if all roles are valid, then add their roleIds to the requestedRoles array
-    requestedRoles = foundRoles.map((role) => role._id);
+    //requestedRoles = foundRoles.map((role) => role._id);
 
     await userModel.create([
       {

@@ -9,7 +9,7 @@
  */
 const verifyRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req?.roles){
+    if (!req.roles){
       return res.status(401).json({ message: "Unauthorized request (no roles found)" });
     } 
 

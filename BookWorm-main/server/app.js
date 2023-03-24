@@ -12,6 +12,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const router = express.Router();
 const EBookController = require("./controllers/EbookController.js");
+const AuthController = require("./controllers/AuthenticationController.js")
 const fs = require('fs');
 
 
@@ -46,10 +47,10 @@ const port = process.env.PORT || env["PORT"] || 5000;
 
 const dbConnectionUri =  env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";
 console.log(`Connecting to MongoDB at ${dbConnectionUri}`);
-
+connectDB(dbConnectionUri);
 let client = new MongoClient(dbConnectionUri);
 const db = client.db("bookworm");
-db.collection("ebook").findOneAndUpdate({_id: 7}, {$set: {"title": "Romeo and Juliet"}});
+db.collection("ebook").findOneAndUpdate({_id: 6}, {$set: {"title": "Romeo and Juliet"}});
 
 
 //Additional Setup
@@ -57,6 +58,8 @@ db.collection("ebook").findOneAndUpdate({_id: 7}, {$set: {"title": "Romeo and Ju
 //app.use(logger);
 app.use(cors(corsOptions));
 app.use(express.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 app.use(express.json());
 
 app.listen(port, () => {
@@ -71,7 +74,7 @@ app.use("/login", require("./routes/api/Login"));
 //app.use("/logout", require("./routes/api/Logout")); //Add logout later
 
 /*set up search method: NOTE: Must 
-properly set up with current MongDB
+properly set up with current MongoDB
 database - was done hosting on home
 computer. Will update.
 */
@@ -100,18 +103,25 @@ app.get('/search', function(req, res) {
     res.send(results);
   });
 });
-
-app.put('/Hold', (req, res) => {
-  EBookController.Hold(req, res);
-});
+const {Hold } = require("./controllers/EbookController");
+app.post('/Hold', Hold);
+// app.post('/Hold', bodyParser, (req, res) => {
+//   EBookController.Hold(req, res);
+// });
+app.post('/Add', (req, res) => {
+  EBookController.addEbook(req, res);
+})
 app.put('/Return', (req, res) => {
   EBookController.Return(req, res);
 });
 app.put('/CheckOut', (req, res) => {
   EBookController.CheckOut(req, res);
 });
-
-
+// const {register} = require("./controllers/AuthenticationController");
+// const jsonParser = bodyParser.json();
+app.put('/register',  (req, res) => {
+  AuthController.register(req,res);
+});
 // Start server
 // app.listen(port, function() {
 //   console.log(`Server listening on port ${port}`);

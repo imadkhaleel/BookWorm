@@ -9,7 +9,7 @@ const { listedebookModel } = require("../models/ListedEbook");
 //const { formatModel } = require("../models/Format");
 const { authorModel } = require("../models/Author");
 const ROLES_LIST = require("../config/RolesList");
-
+const {bodyParser} = require("body-parser");
 /**
  * Gets list of existing ebooks
  *
@@ -710,5 +710,5 @@ module.exports = {
   deleteebook,
   Return,
   CheckOut,
-  Hold,
+  Hold
 };
