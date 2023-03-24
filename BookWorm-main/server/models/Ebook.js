@@ -42,14 +42,19 @@ const eBookSchema = new mongoose.Schema({
   coverImageURL: {
     type: String,
   },
+  formatType: {
+    type: String,
+    default: "pdf",
+  },
   availableCopies: {
     type: Number,
     default: 0,
     min: 0,
   },
-  formatType: {
-    type: String,
-    default: "pdf",
+  totalCopies: {
+    type: Number,
+    default: 0,
+    min: 0,
   },
   holdQueue: {
     type: [mongoose.Schema.Types.ObjectId],

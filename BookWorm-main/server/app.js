@@ -12,6 +12,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const router = express.Router();
 const EBookController = require("./controllers/EbookController.js");
+const fs = require('fs');
 
 
 // Set up HTML

@@ -408,8 +408,10 @@ const update_ebook_Information = async (req, res) => {
       description,
       publishDate,
       coverImageURL,
-      availableCopies,
       formatType,
+      availableCopies,
+      totalCopies,
+      holdQueue
     } = req.body;
     if (
         !author ||
@@ -421,8 +423,10 @@ const update_ebook_Information = async (req, res) => {
         !description ||
         !publishDate ||
         !coverImageURL||
+        !formatType ||
         !availableCopies ||
-        !formatType
+        !totalCopies ||
+        !holdQueue
     ) {
       return res
           .status(400)
@@ -491,8 +495,10 @@ const update_ebook_Information = async (req, res) => {
     ebookToUpdate.description = description;
     ebookToUpdate.publisher = publishDate;
     ebookToUpdate.coverImageURL = coverImageURL;
-    ebookToUpdate.availableCopies = availableCopies;
     ebookToUpdate.formatType = formatType;
+    ebookToUpdate.availableCopies = availableCopies;
+    ebookToUpdate.totalCopies = totalCopies;
+    ebookToUpdate.holdQueue = holdQueue;
 
 
     const updatedebook = await ebookToUpdate.save();
