@@ -47,11 +47,12 @@ const port = process.env.PORT || env["PORT"] || 5000;
 const dbConnectionUri =  env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";
 console.log(`Connecting to MongoDB at ${dbConnectionUri}`);
 
-connectDB(dbConnectionUri);
+let client = new MongoClient(dbConnectionUri);
+const db = client.db("bookworm");
+db.collection("ebook").findOneAndUpdate({_id: 7}, {$set: {"title": "Romeo and Juliet"}});
+
 
 //Additional Setup
-
-app.use(express.json());
 
 //app.use(logger);
 app.use(cors(corsOptions));
@@ -78,7 +79,7 @@ computer. Will update.
 // Set up server and MongoDB connection 
 // const app = express();
 // const port = 3000;
-//const url = 'mongodb://localhost:27017';
+// const url = 'mongodb://localhost:27017';
 // const dbName = 'my_database';
 // let db;
 
@@ -100,18 +101,15 @@ app.get('/search', function(req, res) {
   });
 });
 
-app.get('/stuff', (req, res) => res.send('Hello World!, ' + req.body.user + ' sent ' + req.body.eBook));
-app.listen(3001, () => console.log('Example app listening on port 3001!'));
-app.get('/Hold', (req, res) => {
+app.put('/Hold', (req, res) => {
   EBookController.Hold(req, res);
 });
-app.get('/Return', (req, res) => {
+app.put('/Return', (req, res) => {
   EBookController.Return(req, res);
 });
-app.get('/CheckOut', (req, res) => {
+app.put('/CheckOut', (req, res) => {
   EBookController.CheckOut(req, res);
 });
-
 
 
 // Start server

@@ -198,7 +198,9 @@ const addEbook = async (req, res) => {
       publishDate,
       coverImageURL,
       availableCopies,
-      formatType,
+      totalCopies,
+      holdQueue,
+      //formatType,
     });
 
     // add ebook to author's ebooks
@@ -399,6 +401,7 @@ const initialize_eBook = async (req, res) => {
 const update_ebook_Information = async (req, res) => {
   try {
     let {
+      _id,
       author,
       publisher,
       genre,
@@ -408,12 +411,13 @@ const update_ebook_Information = async (req, res) => {
       description,
       publishDate,
       coverImageURL,
-      formatType,
+      //formatType,
       availableCopies,
       totalCopies,
       holdQueue
     } = req.body;
     if (
+        !_id ||
         !author ||
         !publisher ||
         !genre ||
@@ -423,21 +427,21 @@ const update_ebook_Information = async (req, res) => {
         !description ||
         !publishDate ||
         !coverImageURL||
-        !formatType ||
+        //!formatType ||
         !availableCopies ||
         !totalCopies ||
         !holdQueue
-    ) {
+      ){
       return res
           .status(400)
           .json({ result: null, message: "Invalid request inputs." });
-    }
-    const ebookToUpdate = await ebookModel.findById(ebookId).exec();
-    if (!ebookToUpdate) {
-      return res
-          .status(400)
-          .json({ result: null, message: `Invalid ebook id ${ebookId}` });
-    }
+      }
+      const ebookToUpdate = await ebookModel.findById(ebookId).exec();
+      if (!ebookToUpdate) {
+        return res
+            .status(400)
+            .json({ result: null, message: `Invalid ebook id ${ebookId}` });
+      }
 
     // ensure user is admin or author of ebook being edited
     const { user, roles } = req;
@@ -606,37 +610,37 @@ const Return = async (req,res) => { //eBookToReturn)
     ) {
       return res.status(400).json({ result: null, message: "Missing inputs" });
     }
-  let positionOfBook = null;
-  for(let i = 0; i < userReturning.checked_out_books.length; i++){
-      if(userReturning.checked_out_books[i].book._id === eBookToReturn._id){
+    let positionOfBook = null;
+    for(let i = 0; i < userReturning.checkedOutBookIds.length; i++){
+      if(userReturning.checkedOutBookIds[i] === eBookToReturn._id){
         positionOfBook = i;
         break;
       }
   }
 
-  if(positionOfBook == null){
-    console.log("You do not currently have that book, return failed");
-    return res.status(400).json({ result: null, message: "You do not currently have that book, return failed" });  
+    if(positionOfBook == null){
+      console.log("You do not currently have that book, return failed");
+      return res.status(400).json({ result: null, message: "You do not currently have that book, return failed" });  
+    }
+
+    eBookToReturn.availableCopies++;
+    userReturning.checkedOutBookIds.splice(positionOfBook, 1);
+    return res.status(200).json({result:"Success", message: "Book Successfully Returned",
+                                ebook: eBookToReturn,
+                                user: userReturning});
+
+    if(!eBookToReturn.holdQueue.isEmpty){
+      let userRecievingBook = eBookToReturn.holdQueue.dequeue();
+      //userRecievingBook.CheckOut(eBookToReturn);
+      console.log(userRecievingBook + " recieved " + eBookToReturn);
+      return res.status(200).json({ result: "Success", message: userRecievingBook + " recieved " + eBookToReturn });
+    }
+
+    return res.status(200).json({ result: "ebookReturned" , message: "Success" }); 
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ result: null, message: "Error Returning ebook" });
   }
-
-  //eBookToReturn.availableCopies++;
-  userReturning.checked_out_books.splice(positionOfBook, 1);
-  return res.status(200).json({result:"Success", message: "Book Successfully Returned"});
-
-  if(!eBookToReturn.holdQueue.isEmpty){
-    let userRecievingBook = eBookToReturn.holdQueue.dequeue();
-    //userRecievingBook.CheckOut(eBookToReturn);
-    console.log(userRecievingBook + " recieved " + eBookToReturn);
-    return res.status(200).json({ result: "Success", message: userRecievingBook + " recieved " + eBookToReturn });
-  }
-
-  return res.status(200).json({ result: "ebookReturned" , message: "Success" }); 
-} catch (err) {
-  console.log(err);
-  return res
-      .status(500)
-      .json({ result: null, message: "Error Returning ebook" });
-}
 };
 
 
@@ -654,16 +658,21 @@ const CheckOut = async (req, res) => {
       console.log("Not enough copies, checkout failed");
       return res.status(401).json({result:null, message:"Not enough copies, checkout failed"});
     }
-    if(userCheckingOut.checked_out_books.length >= 5){
+    if(userCheckingOut.checkedOutBookIds.length >= 5){
       console.log("Too many books checked out, checkout failed");
       return res.status(401).json({result:null, message:"Too many books checked out, checkout failed"});
     }
     eBookToCheckOut.availableCopies--;
-    userCheckingOut.checked_out_books.push(eBookToCheckOut);
+    userCheckingOut.checkedOutBookIds.push(eBookToCheckOut);
+//    db.collection("ebook").findByIdAndUpdate({_id:eBookToCheckOut._id}, 
+//                                {$set: {"availableCopies":eBookToCheckOut.availableCopies}});
     console.log("Checkout Success");
-    return res.status(200).json({result:null, message:"Checkout Success!"});
+    return res.status(200).json({result:null, message:"Checkout Success!", 
+          ebook: eBookToCheckOut, 
+          user: userCheckingOut});
   }
   catch (err) {
+    console.log(err);
     console.log("Error checking out book");
     return res.status(400).json({result:null, message:"Checkout failed"});
   }
@@ -681,7 +690,9 @@ const Hold = async (req, res) => {
   try{
     eBookToHold.holdQueue.push(userHolding);
     console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
-    return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line."});
+    return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line.",
+                              ebook: eBookToHold,
+                              user: userHolding});
   }
   catch (err) {
     console.log("Error Holding Book");
