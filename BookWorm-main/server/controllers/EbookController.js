@@ -663,7 +663,7 @@ const CheckOut = async (req, res) => {
       return res.status(401).json({result:null, message:"Too many books checked out, checkout failed"});
     }
     eBookToCheckOut.availableCopies--;
-    userCheckingOut.checkedOutBookIds.push(eBookToCheckOut);
+    userCheckingOut.checkedOutBookIds.push(eBookToCheckOut._id);
 //    db.collection("ebook").findByIdAndUpdate({_id:eBookToCheckOut._id}, 
 //                                {$set: {"availableCopies":eBookToCheckOut.availableCopies}});
     console.log("Checkout Success");
@@ -688,13 +688,14 @@ const Hold = async (req, res) => {
     return res.status(400).json({result:null, message:"Missing eBook"})
   }
   try{
-    eBookToHold.holdQueue.push(userHolding);
+    eBookToHold.holdQueue.push(userHolding._id);
     console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
     return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line.",
                               ebook: eBookToHold,
                               user: userHolding});
   }
   catch (err) {
+    console.log(err);
     console.log("Error Holding Book");
     return res.status(400).json({result:null, message:"Error Holding Book"});
   }
