@@ -39,9 +39,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  checked_out_books: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "eBook"
+  checkedOutBookIds: {
+    type: [String],
+    default: [],
   },
   status: {
     type: String,
