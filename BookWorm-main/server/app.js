@@ -122,6 +122,9 @@ app.put('/CheckOut', (req, res) => {
 app.put('/register',  (req, res) => {
   AuthController.register(req,res);
 });
+app.put('/login', (req, res) => {
+  AuthController.login(req,res);
+})
 // Start server
 // app.listen(port, function() {
 //   console.log(`Server listening on port ${port}`);

@@ -99,13 +99,7 @@ const register = async (req, res) => {
     let foundRoles = [];
      // const foundRoles = await roleModel
      //     .find({ name: { $in: requestedRoleStrings } }).exec();
-    // const foundRoles = await roleModel
-    //     .countDocuments({ name: { $in: requestedRoleStrings } }).exec();
-    // foundRoles.push("Member");
-    // if(requestedRoleStrings.indexOf("Member") >= 0) {
-    //   console.log("member added");
-    //   foundRoles.push("Member");
-    // }
+
     for(let i = 0; i < requestedRoleStrings.length; i++){
       if(requestedRoleStrings.indexOf("Visitor") >= 0) {
         console.log("Visitor added");

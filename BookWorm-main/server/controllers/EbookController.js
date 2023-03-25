@@ -82,7 +82,7 @@ const get_eBook = async (req, res) => {
  *
  * title, license, and description should be Strings, required
  *
- * duration should be the duration in seconds of the ebook as a Number, required
+ * numberOfPages should be the duration in seconds of the ebook as a Number, required
  *
  * published should be the date the ebook was published as a Date, required
  *
@@ -160,8 +160,8 @@ const addEbook = async (req, res) => {
     }
 
     if (
-        !roles.includes(ROLES_LIST.ADMIN) &&
-        !(author.user.toString() === User._id.toString())
+        !roles.includes(ROLES_LIST.ADMIN) //&&
+        //!(author.user.toString() === User._id.toString())
     ) {
       return res
           .status(401)
@@ -186,7 +186,8 @@ const addEbook = async (req, res) => {
         message: "ebook with same name, title, and description already exists",
       });
     }
-
+    let totalCopies = availableCopies;
+    let holdQueue = [];
     const ebook = await ebookModel.create({
       author,
       publisher,

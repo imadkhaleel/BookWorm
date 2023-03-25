@@ -1,18 +1,12 @@
 const mongoose = require("mongoose");
 const { genreModel } = require("./Genre");
-const { userModel } = require("./User");
 const { eBookModel } = require("./Ebook")
 
 const authorSchema = new mongoose.Schema({
-  username: {
+  name: {
     type: String,
     required: true,
     unique: true,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "user",
   },
   genre: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +14,7 @@ const authorSchema = new mongoose.Schema({
     ref: "genre",
   },
   ebooks: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: "eBook",
   },
 });
