@@ -18,7 +18,7 @@ const getUsers = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: [], message: "Error getting Users" });
+    return res.status(500).json({ message: "Error getting Users" });
   }
 };
 
@@ -32,7 +32,7 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { user } = req;
   if (!user) {
-    return res.status(400).json({ result: null, message: "No Username" });
+    return res.status(400).json({ message: "No Username" });
   }
   const currentUser = await userModel.findOne({ username: user }).exec();
   if (currentUser._id.toString() === req.params.id) {
@@ -44,7 +44,6 @@ const getUser = async (req, res) => {
     return res
       .status(403)
       .json({
-        result: null,
         message: "Forbidden: Cannot access other Users info",
       });
   }
@@ -69,21 +68,21 @@ const createUser = async (req, res) => {
     let {roles, username, firstName, lastName, email, password, status} = req.body
 
     if(!(roles && username && firstName && lastName && email && password && status)){
-      return res.status(400).json({result: null, message: "All fields required"})
+      return res.status(400).json({ message: "All fields required"})
     }
     if (!verifyRoles(roles)){
-      return res.status(400).json({result: null, message: "Role does not exist"})
+      return res.status(400).json({ message: "Role does not exist"})
     }
     const checkUser = await userModel.findOne({username: req.username})
     if (!checkUser){
-      return res.status(500).json({result: null, message : "Username already exists"})
+      return res.status(500).json({ message : "Username already exists"})
     }
     const user = await userModel.create({roles, username, firstName, lastName, email, password, status});
     return res.status(200).json({result: user, message: "Success"});
   } 
   catch (err){
     console.log((err));
-    return res.status(500).json({result: null, message : "Error creating user"})
+    return res.status(500).json({ message : "Error creating user"})
   }
 };
 
@@ -92,35 +91,35 @@ const updateUser = async (req, res) => {
   if (canEdit){
     let {roles, username, firstName, lastName, email, password, status, dateOfBirth} = req.body
     if(!(roles && username && firstName && lastName && email && password && status && dateOfBirth)){
-      return res.status(400).json({result: null, message: "All fields required"})
+      return res.status(400).json({ message: "All fields required"})
     }
     const verifiedRoles = await verifyRoles(roles)
     if (!verifiedRoles){
-      return res.status(400).json({result: null, message: "Role does not exist"})
+      return res.status(400).json({ message: "Role does not exist"})
     }
     const {user} = req
     if (!user){
-      return res.status(400).json({result: null, message: "User does not exist"})
+      return res.status(400).json({ message: "User does not exist"})
     }
     try{
       const userToUpdate = await userModel.findOne({username: req.user}).exec();
       if(!userToUpdate){
-        return res.status(400).json({result : null, message: "Invalid user"});
+        return res.status(400).json({ message: "Invalid user"});
       }
       const newUser = await userModel.findOneAndUpdate({roles, username, firstName, lastName, email, password, status, dateOfBirth});
       if(newUser){
-        return res.status(200).json({result: null, message: "Success updating user"})
+        return res.status(200).json({ message: "Success updating user"})
       } 
       else {
-        return res.status(400).json({result: null, message: "Failure updating user"})
+        return res.status(400).json({ message: "Failure updating user"})
       } 
     } 
     catch {
-      return res.status(400).json({result : null, message: "Error updating user"})
+      return res.status(400).json({ message: "Error updating user"})
     }
   } 
   else {
-    return res.status(400).json({result: null, message: "Invalid permissions to update user"})
+    return res.status(400).json({ message: "Invalid permissions to update user"})
   }
 };
 
@@ -130,18 +129,18 @@ const updateUserProperties = async (req, res) => {
     try{
       const userToUpdate = await userModel.findOne({username: req.username}).exec();
       if(!userToUpdate){
-        return res.status(400).json({result : null, message: "Invalid user"});
+        return res.status(400).json({ message: "Invalid user"});
       }
     } 
     catch{
-      return res.status(400).json({result : null, message: "Error updating user"})
+      return res.status(400).json({ message: "Error updating user"})
     }
     let {roles, username, firstName, lastName, email, password, status, dateOfBirth} = req.body
     let roleR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR, dateOfBirthR;
     if (roles){
       const verifiedRoles = await verifyRoles(roles)
       if(!verifiedRoles){
-        return res.status(400).json({result:null, message: "Invalid role"})
+        return res.status(400).json({ message: "Invalid role"})
       }
       roleR = roles
     } 
@@ -152,7 +151,7 @@ const updateUserProperties = async (req, res) => {
     if (username){
       const checkUser = await userModel.findOne({username: req.username})
       if (!checkUser){
-        return res.status(500).json({result: null, message : "Username already exists"})
+        return res.status(500).json({ message : "Username already exists"})
       }
       usernameR = username
     } 
@@ -198,19 +197,19 @@ const updateUserProperties = async (req, res) => {
     try {
       const newUser = await userModel.findOneAndUpdate({roleR, usernameR, firstNameR, lastNameR, emailR, passwordR, statusR, dateOfBirthR});
       if(newUser){
-        return res.status(200).json({result: null, message: "Success updating user"})
+        return res.status(200).json({ message: "Success updating user"})
       } 
       else {
-        return res.status(400).json({result: null, message: "Failure updating user"})
+        return res.status(400).json({ message: "Failure updating user"})
       }
     } 
     catch(err){
       console.log(err);
-      return res.status(400),json({result:null, message: "Could not make new user"})
+      return res.status(400).json({ message: "Could not make new user"})
     }
   } 
   else {
-    return res.status(400).json({result: null, message: "Invalid permissions to update user"})
+    return res.status(400).json({ message: "Invalid permissions to update user"})
   }
 };
 /**
@@ -232,22 +231,22 @@ const deleteUser = async (req, res) => {
     try{
       const {user} = req
       if(!user){
-        return res.status(400).json({result:null, message:"User does not exist"})
+        return res.status(400).json({ message:"User does not exist"})
       }
       const userToDelete = userModel.findOne({username: user}).exec();
       if(!userToDelete){
-        return res.status(400).json({ result: null, message: "invalid user" });
+        return res.status(400).json({ message: "invalid user" });
       }
       await userModel.findOneAndDelete({username:user}).exec();
-      return res.status(200).json({result:null, message: "Success"});
+      return res.status(200).json({ message: "Success"});
     } 
     catch (err){
       console.log(err);
-      return res.status(500).json({result:null, message: "Error deleting user"});
+      return res.status(500).json({ message: "Error deleting user"});
     }
   }
   else {
-    return res.status(400).json({result: null, message: "Invalid permissions to delete user"})
+    return res.status(400).json({ message: "Invalid permissions to delete user"})
   }
 };
 

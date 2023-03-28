@@ -33,6 +33,7 @@ const { catalogModel } = require("./models/Catalog");
 
 //Set up .env file
 
+
 const path = require("path");
 const rootDir = path.resolve(__dirname, ".");
 const env = require("dotenv").config({ path: `${rootDir}/.env` }).parsed;
@@ -42,7 +43,6 @@ if (!env) {
 }
 
 const port = process.env.PORT || env["PORT"] || 5000;
-
 //Connect to mongoDB
 
 const dbConnectionUri =  env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";

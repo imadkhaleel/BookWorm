@@ -16,7 +16,7 @@ const getGenres = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: [], message: "Error getting genres" });
+    return res.status(500).json({ message: "Error getting genres" });
   }
 };
 
@@ -37,7 +37,7 @@ const getGenre = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: null, message: "Error getting genre" });
+    return res.status(500).json({ message: "Error getting genre" });
   }
 };
 
@@ -59,7 +59,7 @@ const createGenre = async (req, res) => {
     console.log(req.body)
     console.log(req)
     if(!name) {
-      return res.status(400).json({ result: null, message: "Genre name is required" });
+      return res.status(400).json({ message: "Genre name is required" });
     }
     if(!ebooks) { ebooks = []; }
     else {
@@ -67,7 +67,7 @@ const createGenre = async (req, res) => {
       for(let i = 0; i < ebooks.length; i++) {
         const ebook = await ebookModel.findById(ebooks[i]).exec();
         if(!ebook) {
-          return res.status(400).json({ result: null, message: `Invalid ebook id ${ebooks[i]}` });
+          return res.status(400).json({ message: `Invalid ebook id ${ebooks[i]}` });
         }
       }
     }
@@ -76,7 +76,7 @@ const createGenre = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: null, message: "Error creating genre" });
+    return res.status(500).json({ message: "Error creating genre" });
   }
 };
 
@@ -100,11 +100,11 @@ const updateGenre = async (req, res) => {
   try {
     let { id, name, ebooks } = req.body;
     if(!id || !name) {
-      return res.status(400).json({ result: null, message: "Genre name and id is required" });
+      return res.status(400).json({ message: "Genre name and id is required" });
     }
     const genreToUpdate = await genreModel.findById(id).exec();
     if(!genreToUpdate) {
-      return res.status(400).json({ result: null, message: `Invalid genre id ${id}` });
+      return res.status(400).json({ message: `Invalid genre id ${id}` });
     }
     if(!ebooks) { ebooks = []; }
     else {
@@ -112,7 +112,7 @@ const updateGenre = async (req, res) => {
       for(let i = 0; i < ebooks.length; i++) {
         const ebook = await ebookModel.findById(ebooks[i]).exec();
         if(!ebook) {
-          return res.status(400).json({ result: null, message: `Invalid ebook id ${ebooks[i]}` });
+          return res.status(400).json({ message: `Invalid ebook id ${ebooks[i]}` });
         }
       }
     }
@@ -126,7 +126,7 @@ const updateGenre = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: null, message: "Error updating genre" });
+    return res.status(500).json({ message: "Error updating genre" });
   }
 }
 
@@ -139,7 +139,7 @@ const updateGenre = async (req, res) => {
  * ```
  * id is required, with id being the object id of the genre to update in String format
  * 
- * ebooks is required, with ebooks being an array of ebook ids in String format
+ * ebooks field is required, with ebooks being an array of ebook ids in String format
  * 
  * @param {HttpRequest} req request object
  * @param {HttpResponse} res response object
@@ -149,21 +149,21 @@ const addebooksToGenre = async (req, res) => {
   try {
     const { id, ebooks } = req.body;
     if(!id || !ebooks) {
-      return res.status(400).json({ result: null, message: "Genre id and ebooks are required" });
+      return res.status(400).json({ message: "Genre id and ebooks are required" });
     }
     const genreToUpdate = await genreModel.findById(id).exec();
     if(!genreToUpdate) {
-      return res.status(400).json({ result: null, message: `Invalid genre id ${id}` });
+      return res.status(400).json({ message: `Invalid genre id ${id}` });
     }
     const containedebooks = new Set(genreToUpdate.ebooks.map(ebook => ebook.toString()));
     // check to make sure each element in ebooks is a valid ebook id
     for(let i = 0; i < ebooks.length; i++) {
       const ebook = await ebookModel.findById(ebooks[i]).exec();
       if(!ebook) {
-        return res.status(400).json({ result: null, message: `Invalid ebook id ${ebooks[i]}` });
+        return res.status(400).json({ message: `Invalid ebook id ${ebooks[i]}` });
       }
       if(containedebooks.has(ebooks[i])) {
-        return res.status(400).json({ result: null, message: `ebook ${ebooks[i]} already in genre` });
+        return res.status(400).json({ message: `ebook ${ebooks[i]} already in genre` });
       }
     }
 
@@ -177,7 +177,7 @@ const addebooksToGenre = async (req, res) => {
   } 
   catch (err) {
     console.log(err);
-    return res.status(500).json({ result: null, message: "Error adding ebooks to genre" });
+    return res.status(500).json({ message: "Error adding ebooks to genre" });
   }
 };
 
@@ -199,17 +199,17 @@ const deleteGenre = async (req, res) => {
   try {
     const { id } = req.body;
     if(!id) {
-      return res.status(400).json({ result: null, message: "Genre id is required" });
+      return res.status(400).json({ message: "Genre id is required" });
     }
     const genreToDelete = await genreModel.findById(id).exec();
     if(!genreToDelete) {
-      return res.status(400).json({ result: null, message: `Invalid genre id ${id}` });
+      return res.status(400).json({ message: `Invalid genre id ${id}` });
     }
     await genreModel.findByIdAndDelete(id).exec();
-    return res.status(200).json({ result: null, message: "Success" });
+    return res.status(200).json({ message: "Success" });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ result: null, message: "Error deleting genre" });
+    return res.status(500).json({ message: "Error deleting genre" });
   }
 };
 

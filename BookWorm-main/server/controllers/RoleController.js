@@ -189,25 +189,25 @@ const deleteRole = async (req, res) => {
     if (!id) {
       return res
         .status(400)
-        .json({ result: null, message: "Role id is required" });
+        .json({ message: "Role id is required" });
     }
     // ensure role exists
     const role = await roleModel.findById(id).exec();
     if (!role) {
       return res
         .status(400)
-        .json({ result: null, message: `Invalid role id ${id}` });
+        .json({ message: `Invalid role id ${id}` });
     }
     // remove role from all users with role in roles array
     await userModel.updateMany({ roles: id }, { $pull: { roles: id } }).exec();
     // delete role
     await roleModel.findByIdAndDelete(id).exec();
-    return res.status(200).json({ result: null, message: "Success" });
+    return res.status(200).json({ message: "Success" });
   } catch (err) {
     console.log(err);
     return res
       .status(500)
-      .json({ result: null, message: "Error deleting role" });
+      .json({ message: "Error deleting role" });
   }
 };
 
