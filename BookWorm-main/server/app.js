@@ -12,15 +12,45 @@ const app = express();
 const bodyParser = require('body-parser');
 const router = express.Router();
 const EBookController = require("./controllers/EbookController.js");
-const AuthController = require("./controllers/AuthenticationController.js")
+const AuthController = require("./controllers/AuthenticationController.js");
+const passport = require('passport')
+const initializePassport= require('./passport-config')
+const methodOverride = require("method-override")
 const fs = require('fs');
 
-
+//Set up passport
+initializePassport(
+    passport,
+    (email) => users.find((user) => user.email === email),
+    (id) => users.find((user) => user.id === id)
+);
 // Set up HTML
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views/HomePage.html"));
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "views/HomePage.html"));
+// });
+app.get('/', (req, res) => {
+  res.render('index.ejs', { name: "BookWorm"})
+})
+app.get("/login", (req, res) => {
+  res.render('login.ejs')
+})
+app.post('/login', (req, res) => {
+  res.render('login.ejs', {messages: ""})
+})
+app.get('/register', (req, res) => {
+  res.render('register.ejs')
+})
+app.post('/register', (req, res) => {
+  res.render('register.ejs', {messages: ""});
+})
+app.delete('/logout', (req, res, next) => {
+  req.logOut((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/login');
+  });
 });
-
 
 // Add data models used
 
@@ -41,8 +71,8 @@ if (!env) {
   console.log(env);
   console.log("Environment variables file not found");
 }
-
 const port = process.env.PORT || env["PORT"] || 5000;
+
 //Connect to mongoDB
 
 const dbConnectionUri =  env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";
@@ -56,12 +86,13 @@ db.collection("ebook").findOneAndUpdate({_id: 6}, {$set: {"title": "Romeo and Ju
 //Additional Setup
 
 //app.use(logger);
+app.set("view-engine", "ejs");
 app.use(cors(corsOptions));
 app.use(express.urlencoded({extended: false}));
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(express.json());
-
+app.use(methodOverride('_method'));
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
@@ -70,14 +101,9 @@ app.listen(port, () => {
 
 app.use("/", require("./routes/api/Root"));
 //app.use("/catalog", require("./routes/api/Catalog.js"));
-app.use("/login", require("./routes/api/Login"));
+//app.use("/login", require("./routes/api/Login"));
 //app.use("/logout", require("./routes/api/Logout")); //Add logout later
 
-/*set up search method: NOTE: Must 
-properly set up with current MongoDB
-database - was done hosting on home
-computer. Will update.
-*/
 
 // Set up server and MongoDB connection 
 // const app = express();
@@ -103,8 +129,10 @@ app.get('/search', function(req, res) {
     res.send(results);
   });
 });
-const {Hold } = require("./controllers/EbookController");
-app.post('/Hold', Hold);
+const { Hold } = require("./controllers/EbookController");
+app.post('/Hold', (req, res) => {
+  EBookController.Hold(req, res);
+});
 // app.post('/Hold', bodyParser, (req, res) => {
 //   EBookController.Hold(req, res);
 // });
@@ -117,14 +145,13 @@ app.put('/Return', (req, res) => {
 app.put('/CheckOut', (req, res) => {
   EBookController.CheckOut(req, res);
 });
-// const {register} = require("./controllers/AuthenticationController");
-// const jsonParser = bodyParser.json();
-app.put('/register',  (req, res) => {
-  AuthController.register(req,res);
-});
-app.put('/login', (req, res) => {
-  AuthController.login(req,res);
-})
+
+// app.put('/register',  (req, res) => {
+//   AuthController.register(req,res);
+// });
+// app.put('/login', (req, res) => {
+//   AuthController.login(req,res);
+// })
 // Start server
 // app.listen(port, function() {
 //   console.log(`Server listening on port ${port}`);
