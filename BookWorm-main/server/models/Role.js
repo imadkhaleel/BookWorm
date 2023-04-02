@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const roleSchema = new mongoose.Schema({
-  memberType: { //Previously clearanceLevel
+  memberType: {
     type: Number,
     required: true,
   },

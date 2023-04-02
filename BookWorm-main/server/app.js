@@ -61,26 +61,10 @@ const { eBookModel } = require("./models/Ebook");
 const { genreModel } = require("./models/Genre");
 const { catalogModel } = require("./models/Catalog");
 
-//Set up .env file
 
 
-const path = require("path");
-const rootDir = path.resolve(__dirname, ".");
-const env = require("dotenv").config({ path: `${rootDir}/.env` }).parsed;
-if (!env) {
-  console.log(env);
-  console.log("Environment variables file not found");
-}
-const port = process.env.PORT || env["PORT"] || 5000;
-
-//Connect to mongoDB
-
-const dbConnectionUri =  env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";
-console.log(`Connecting to MongoDB at ${dbConnectionUri}`);
-connectDB(dbConnectionUri);
-let client = new MongoClient(dbConnectionUri);
-const db = client.db("bookworm");
-db.collection("ebook").findOneAndUpdate({_id: 6}, {$set: {"title": "Romeo and Juliet"}});
+// Set up server and MongoDB connection
+const {port, db} = InitConnection();
 
 
 //Additional Setup
@@ -105,18 +89,6 @@ app.use("/", require("./routes/api/Root"));
 //app.use("/logout", require("./routes/api/Logout")); //Add logout later
 
 
-// Set up server and MongoDB connection 
-// const app = express();
-// const port = 3000;
-// const url = 'mongodb://localhost:27017';
-// const dbName = 'my_database';
-// let db;
-
-//MongoClient.connect(url, function(err, client) {
-//  console.log("Connected successfully to server");
-//
-//  db = client.db(dbName);
-//});
 
 // Define search endpoint
 app.get('/search', function(req, res) {
@@ -130,12 +102,14 @@ app.get('/search', function(req, res) {
   });
 });
 const { Hold } = require("./controllers/EbookController");
+const path = require("path");
 app.post('/Hold', (req, res) => {
   EBookController.Hold(req, res);
 });
 // app.post('/Hold', bodyParser, (req, res) => {
 //   EBookController.Hold(req, res);
 // });
+// const validateInput = require("some-file-with-")
 app.post('/Add', (req, res) => {
   EBookController.addEbook(req, res);
 })
@@ -156,3 +130,30 @@ app.put('/CheckOut', (req, res) => {
 // app.listen(port, function() {
 //   console.log(`Server listening on port ${port}`);
 //});
+function InitConnection() {
+  // Localhost setup
+  const {env, port} = setLocalhost();
+  //Connect to mongoDB
+  return setDB(env, port);
+}
+function setLocalhost() {
+  const path = require("path");
+  const rootDir = path.resolve(__dirname, ".");
+  const env = require("dotenv").config({path: `${rootDir}/.env`}).parsed;
+  if (!env) {
+    console.log(env);
+    console.log("Environment variables file not found");
+  }
+  const port = process.env.PORT || env["PORT"] || 5000;
+  return {env, port};
+}
+
+function setDB(env, port) {
+  const dbConnectionUri = env["DB_CONNECTION_STRING"] || "mongodb://localhost:27017/bookworm";
+  console.log(`Connecting to MongoDB at ${dbConnectionUri}`);
+  connectDB(dbConnectionUri);
+  let client = new MongoClient(dbConnectionUri);
+  const db = client.db("bookworm");
+  db.collection("ebook").findOneAndUpdate({_id: 6}, {$set: {"title": "Romeo and Juliet"}});
+  return {port, db};
+}
