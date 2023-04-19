@@ -49,11 +49,11 @@
         "description": "If you see this, you are reading into this too much",
         "publishDate": "2022-10-31T09:00:00.594Z",
         "coverImageURL": "https://www.ece.rutgers.edu/sites/default/files/Marsic.jpg",
-        "availableCopies": 0
+        "availableCopies": 1
     },
     {
         "_id": 10,
-        "author": "Marsic and co",
+        "author": "Marsic and co and so on",
         "publisher": "Marsic",
         "genre": "Psycho",
         "title": "Book with id 10",

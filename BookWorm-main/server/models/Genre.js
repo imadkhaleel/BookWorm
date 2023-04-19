@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const genreSchema = new mongoose.Schema({
-    eBooks: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: "eBook" }],
-        default: [],
-    },
     name: {
         type: String,
         required: true,
@@ -12,6 +8,6 @@ const genreSchema = new mongoose.Schema({
 });
 
 module.exports = {
-  genreModel: mongoose.model("Genre", genreSchema),
+  genreModel: mongoose.model("genres", genreSchema),
   genreSchema,
 };

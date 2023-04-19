@@ -22,6 +22,6 @@ const formatSchema = new mongoose.Schema({
 });
 
 module.exports = {
-  formatModel: mongoose.model("Format", formatSchema),
+  formatModel: mongoose.model("formats", formatSchema),
   formatSchema,
 };

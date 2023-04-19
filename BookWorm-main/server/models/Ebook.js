@@ -63,6 +63,6 @@ const eBookSchema = new mongoose.Schema({
 });
 
 module.exports = {
-  eBookModel: mongoose.model("eBook", eBookSchema),
+  eBookModel: mongoose.model("ebooks", eBookSchema),
   eBookSchema,
 };
