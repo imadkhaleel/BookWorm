@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Account Details</title>
+    <style>
+
+#browseButton {
+  background-color: #244a84;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+
+}
+
+#browseButton:hover {
+  background-color: #3e8e41;
+}
+
+label[for="searchInput"] {
+  font-size: 20px;
+  color: #244a84;
+  padding-right: 10px;
+}
+
+      body {
+        font-family: Arial, sans-serif;
+      }
+      
+      #searchBar {
+        display: flex;
+        align-items: center;
+        background-color: #f2f2f2;
+        border-radius: 10px;
+        padding: 5px 10px;
+        margin: 20px auto;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      
+      #search-input {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+      }
+      
+      #search-button {
+        background-color: #244a84;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-left: 10px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      
+      #search-button:hover {
+        background-color: #3e8e41;
+      }
+      
+      /* Add some CSS styles for displaying account information */
+      .account-info {
+        width: 80%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .account-section {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+      }
+      
+      .account-section h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      
+      .account-section p {
+        font-size: 16px;
+      }
+      
+      /* Add some styles for the welcome message and logout button */
+      h1 {
+        text-align: center;
+        font-size: 32px;
+        margin-top: 50px;
+      }
+      
+      form {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      
+      button[type="submit"] {
+        background-color: #244a84;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-left: 10px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      
+      button[type="submit"]:hover {
+        background-color: #244a84;
+      }
+    </style>
+  </head>
+  <body>
+    <form method="post" action="/search">
+        <input type="text" id="searchInput" name="searchInput">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <form action="/catalog" method="POST">
+        <button type="submit">Browse Catalog</button>
+      </form>
+    
+    <h1>Welcome, <%= name %>!</h1>
+
+    <form action="/logout?_method=DELETE" method="POST">
+      <button type="submit">Log Out</button>
+    </form>
+    
+    <div class="account-info">
+      <div class="account-section">
+        <h2>Personal Information</h2>
+        <p>First Name: <%= name %></p>
+        <p>Last Name: <%= lastname %></p>
+        <p>Email: <%= email %></p>
+        <p>Phone: N/A</p>
+      </div>
+      
+      <div class="account-section">
+        <h2>Account Details</h2>
+        <p>User Type: Member</p>
+        <p>Account ID: <%= id %></p>
+      </div>
+    </div>
+  </body>
+</html>

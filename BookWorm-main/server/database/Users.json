@@ -1,0 +1,17 @@
+[
+  { "_id": 11, "roles":[4], "dateOfBirth":"11/17/2001", "first_name": "Quinton", "last_name": "Roberds","username": "admin1", "email": "qroberds0@freewebs.com", "password": "R0IX3mM", "status": "Locked" },
+  { "_id": 12, "roles":[4], "dateOfBirth":"11/17/2001", "first_name": "Timmi", "last_name": "Esgate", "username": "admin2","email": "tesgate1@istockphoto.com", "password": "0VV8Dybrp", "status": "Normal" },
+  { "_id": 13, "roles":[4], "dateOfBirth":"11/17/2001", "first_name": "Carson", "last_name": "MacAllester", "username": "admin3","email": "cmacallester2@hp.com", "password": "ETmwoH", "status": "Normal" },
+  { "_id": 14, "roles":[4], "dateOfBirth":"11/17/2001", "first_name": "Berk", "last_name": "Norville", "username": "cur1","email": "bnorville3@usa.gov", "password": "ZaIO14J0", "status": "Locked" },
+  { "_id": 15, "roles":[3], "dateOfBirth":"11/17/2001", "first_name": "Sven", "last_name": "Ben", "username": "cur2","email": "sben4@sohu.com", "password": "eP1DLGo", "status": "Normal" },
+  { "_id": 16, "roles":[3], "dateOfBirth":"11/17/2001", "first_name": "Eldredge", "last_name": "Yelland","username": "cur3", "email": "eyelland5@prnewswire.com", "password": "noCRjg6sf", "status": "Normal" },
+  { "_id": 17, "roles":[3], "dateOfBirth":"11/17/2001", "first_name": "Layne", "last_name": "Saller", "username": "cur4","email": "lsaller6@lulu.com", "password": "9Yra272mP5", "status": "Locked" },
+  { "_id": 18, "roles":[3], "dateOfBirth":"11/17/2001", "first_name": "Sherm", "last_name": "Askell", "username": "cur5","email": "saskell7@techcrunch.com", "password": "zOZ48luHacG", "status": "Locked" },
+  { "_id": 19, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Joya", "last_name": "Gaylor", "username": "mem1","email": "jgaylor8@lycos.com", "password": "CH89j7", "status": "Normal" },
+  { "_id": 20, "roles":[2], "dateOfBirth":"11/17/2001","first_name": "Roi", "last_name": "Risely", "username": "mem2", "email": "rrisely9@dell.com", "password": "ZZDlEFigOYNE", "status": "Locked" },
+  { "_id": 21, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Rudd", "last_name": "Mauchline","username": "mem3", "email": "rmauchlinea@icio.us", "password": "L4e6LIWoe", "status": "Normal" },
+  { "_id": 22, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Boote", "last_name": "Bowker", "username": "mem4","email": "bbowkerb@lycos.com", "password": "0PpfFrjAvqn", "status": "Locked" },
+  { "_id": 23, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Reagan", "last_name": "Heintzsch", "username": "mem5","email": "rheintzschc@slideshare.net", "password": "Et7DW86", "status": "Locked" },
+  { "_id": 24, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Bruis", "last_name": "Proudler","username": "mem6", "email": "bproudlerd@toplist.cz", "password": "rFnFBGiM", "status": "Locked" },
+  { "_id": 25, "roles":[2], "dateOfBirth":"11/17/2001", "first_name": "Moishe", "last_name": "Cockman","username": "mem7", "email": "mcockmane@google.es", "password": "10cpEv0", "status": "Locked" }
+]
