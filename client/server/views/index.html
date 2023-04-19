@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- dasfjalksdjfkl;asdjfl;asjkdfl;akdjsf;flk-->
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookWorm</title>
+
+  <!-- Favicon Section -->
+  <link rel="apple-touch-icon" sizes="180x180" href="public/icon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="public/icon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="public/icon/favicon-16x16.png">
+  <link rel="manifest" href="public/icon/site.webmanifest">
+  <link rel="mask-icon" href="public/icon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="public/icon/favicon.ico" type="image/x-icon" />
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#000000">
+  <!-- Favicon Section -->
+
+  <!-- Linked CSS -->
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/font-awesome.css" />
+  <link rel="stylesheet" href="./css/home.css" />
+  <!-- Linked CSS -->
+
+  <!-- Linked JS -->
+  <script src="./js/base.js" defer></script>
+  <script src="./js/forms.js" defer></script>
+  <!-- Linked JS -->
+</head>
+<body class="bg-dark">
+  <header>
+    <div class="container bg-dark">
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark d-flex">
+        <a class="navbar-brand" href="#">
+          <div class="logo-content d-flex align-items-center">
+            <img src="./public/bookworm_logo.png" alt="Bookworm Logo" class="logo" />
+            <span class="logo-content__text navbar-text d-inline-block m-auto">Bookworm</span>
+          </div>
+        </a>
+        <button 
+          class="navbar-toggler" 
+          type="button" 
+          data-bs-toggle="collapse" 
+          data-bs-target="#navbarSupportedContent" 
+          aria-controls="navbarSupportedContent" 
+          aria-expanded="false" 
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto text-center">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+          </ul>
+        </div>
+      </nav> 
+    </div>
+  </header>
+  <main class="min-vh-100 text-bg-dark">
+    this is some text
+    <div class="container text-light">
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card" id="login-card">
+            <h2 class="card-title text-center text-bg-light py-3">Login</h2>
+            <div class="card-body">
+              <form novalidate action="" class="text-bg-light">
+                <div class="form-floating pb-3">
+                  <input type="email" class="form-control" id="login_email" placeholder="your email here"/>
+                  <label for="login_email" class="form-label" required>Email</label>
+                  <div class="invalid-feedback">Please enter a valid email</div>
+                  <div class="valid-feedback">Email is valid</div>
+                </div>
+                <div class="form-floating pb-3">
+                  <input type="password" class="form-control" id="login_password" placeholder="your password here"/>
+                  <label for="login_password" class="form-label" required>Password</label>
+                  <div class="invalid-feedback">Password incorrect</div>
+                </div>
+                <div class="d-flex">
+                  <a href="#signup-card" class="btn-link d-inline-block">Don't have an account?</a>
+                  <a href="#" class="btn-link d-inline-block ms-auto">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary d-inline-block mt-2 hcenter-transform">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card" id="signup-card">
+            <h2 class="card-title text-center text-bg-light py-3">Sign Up</h2>
+            <div class="card-body">
+              <form novalidate action="" class="text-bg-light">
+                <div class="form-floating pb-3">
+                  <input type="email" class="form-control" id="signup_email" placeholder="your email here"/>
+                  <label for="signup_email" class="form-label" required>Email</label>
+                  <div class="invalid-feedback">Please enter a valid email</div>
+                  <div class="valid-feedback">Email is valid</div>
+                </div>
+                <div class="form-floating pb-3">
+                  <input type="text" class="form-control" id="signup_username" placeholder="your username here"/>
+                  <label for="signup_username" class="form-label" required>Username</label>
+                  <div class="invalid-feedback">Please enter a valid username</div>
+                  <div class="valid-feedback">Username is valid</div>
+                </div>
+                <div class="form-floating pb-3">
+                  <input type="password" class="form-control" id="signup_password" placeholder="your password here"/>
+                  <label for="signup_password" class="form-label" required>Password</label>
+                  <div class="invalid-feedback">Password invalid. Please make a password with at least 8 upper and lower case characters, letters and numbers.</div>
+                  <div class="valid-feedback">Password valid</div>
+                </div>
+                <div class="d-flex">
+                  <a href="#login-card" class="btn-link d-inline-block">Already have an account?</a>
+                </div>
+                <button type="submit" class="btn btn-primary d-inline-block mt-2 hcenter-transform">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="container text-light">
+      <div class="row">
+        <div class="col-12">
+          <p class="text-center">&copy; 2022-2024 AJ, Joe, and Co. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
