@@ -95,121 +95,122 @@ const get_eBook = async (req, res) => {
  * @returns json object with message and created genre
  */
 const addEbook = async (req, res) => {
-  try {
-    let {
-      author,
-      publisher,
-      genre,
-      title,
-      numberOfPages,
-      ISBN,
-      description,
-      publishDate,
-      coverImageURL,
-      availableCopies,
-      formatType,
-    } = req.body;
-    const maxAvailableCopies = 0;
+try{
+  let {
+    author,
+    publisher,
+    genre,
+    title,
+    numberOfPages,
+    ISBN,
+    description,
+    publishDate,
+    coverImageURL,
+    availableCopies,
+    formatType,
+  } = req.body;
+  const maxAvailableCopies = 0;
 
-    if (
-        !author ||
-        !publisher ||
-        !genre ||
-        !title ||
-        !numberOfPages ||
-        !ISBN ||
-        !description ||
-        !publishDate ||
-        !coverImageURL||
-        !availableCopies ||
-        !formatType
-    ) {
-      return res.status(400).json({ message: "Missing inputs" });
-    }
+  if (
+      !author ||
+      !publisher ||
+      !genre ||
+      !title ||
+      !numberOfPages ||
+      !ISBN ||
+      !description ||
+      !publishDate ||
+      !coverImageURL ||
+      !availableCopies ||
+      !formatType
+  ) {
+    return res.status(400).json({message: "Missing inputs"});
+  }
 
-    if (
-        !mongoose.Types.ObjectId.isValid(author) ||
-        !mongoose.Types.ObjectId.isValid(genre)
-    ) {
-      return res.status(400).json({ message: "Invalid inputs" });
-    }
+  if (
+      !mongoose.isValidObjectId(author) ||
+      !mongoose.isValidObjectId(genre)
+  ) {
+    return res.status(400).json({ message: "Invalid author or genre" });
+  }
 
-    const authorId = await authorModel.findById(author).exec();
-    if (!authorId) {
-      return res
-          .status(400)
-          .json({ message: "Invalid author id" });
-    }
+  // const authorId = await authorModel.findById(author).exec();
+  // if (!authorId) {
+  //   return res
+  //       .status(400)
+  //       .json({ message: "Invalid author id" });
+  // }
 
-    const Genre = await genreModel.findById(genre).exec();
-    if (!Genre) {
-      return res
-          .status(400)
-          .json({ message: "Invalid genre id" });
-    }
+  // const Genre = await genreModel.findById(genre).exec();
+  // if (!Genre) {
+  //   return res
+  //       .status(400)
+  //       .json({ message: "Invalid genre id" });
+  // }
+  const { user, roles } = req;
+  if (!user || !roles) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const User = userModel.findOne({ username: user }).exec();
+  if (!User) {
+    return res
+        .status(401)
+        .json({ message: "Invalid user, unauthorized" });
+  }
 
-    const { user, roles } = req;
-    if (!user || !roles) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const User = userModel.findOne({ username: user }).exec();
-    if (!User) {
-      return res
-          .status(401)
-          .json({ message: "Invalid user, unauthorized" });
-    }
+  if (
+      !roles.includes(ROLES_LIST.ADMIN) //&&
+      //!(author.user.toString() === User._id.toString())
+  ) {
+    return res
+        .status(401)
+        .json({
+          message:
+              "Unauthorized, you may not create an ebook under another author's name",
+        });
+  }
 
-    if (
-        !roles.includes(ROLES_LIST.ADMIN) //&&
-        //!(author.user.toString() === User._id.toString())
-    ) {
-      return res
-          .status(401)
-          .json({
-            message:
-                "Unauthorized, you may not create an ebook under another author's name",
-          });
-    }
-
-    // check if ebook with same author and title and description already exists
-    const existingebook = await ebookModel
-        .findOne({
-          author,
-          title,
-          description,
-        })
-        .exec();
-    if (existingebook) {
-      return res.status(400).json({
-        message: "ebook with same name, title, and description already exists",
-      });
-    }
-    let totalCopies = availableCopies;
-    let holdQueue = [];
-    const ebook = await ebookModel.create({
-      author,
-      publisher,
-      genre,
-      title,
-      numberOfPages,
-      ISBN,
-      description,
-      publishDate,
-      coverImageURL,
-      availableCopies,
-      totalCopies,
-      holdQueue,
+  // check if ebook with same author and title and description already exists
+  const existingebook = await ebookModel
+      .findOne({
+        author,
+        title,
+        description,
+      })
+      .exec();
+  if (existingebook) {
+    return res.status(400).json({
+      message: "ebook with same name, title, and description already exists",
     });
+  }
 
-    // add ebook to author's ebooks
-    author.ebooks.unshift(ebook);
-    const updatedauthor = await author.save();
+  let totalCopies = availableCopies;
+  let holdQueue = [];
+  const ebook = await ebookModel.create({
+    author,
+    publisher,
+    genre,
+    title,
+    numberOfPages,
+    ISBN,
+    description,
+    publishDate,
+    coverImageURL,
+    availableCopies,
+    totalCopies,
+    holdQueue,
+  });
 
-    // add ebook to genre's ebooks
-    ebook.genre.unshift(genre);
-    const updatedGenre = await Genre.save();
+  // add ebook to author's ebooks
+  author.ebooks.unshift(ebook);
+  const updatedauthor = await author.save();
 
-    return res.status(200).json({ result: ebook, message: "Success" });
+  // add ebook to genre's ebooks
+  ebook.genre.unshift(genre);
+  const updatedGenre = await Genre.save();
+
+   return res.status(200).json({result: ebook, message: "Success"});
+
   } catch (err) {
     console.log(err);
     return res
