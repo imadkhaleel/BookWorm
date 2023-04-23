@@ -4,8 +4,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const { genreModel } = require("../models/Genre");
 const { userModel } = require("../models/User");
-const { ebookModel } = require("../models/Ebook");
-const { listedebookModel } = require("../models/ListedEbook");
+const { eBookModel } = require("../models/Ebook");
+const { listedEbookModel } = require("../models/ListedEbook");
 //const { formatModel } = require("../models/Format");
 const { authorModel } = require("../models/Author");
 const ROLES_LIST = require("../config/RolesList");
@@ -19,7 +19,7 @@ const {bodyParser} = require("body-parser");
  */
 const populateCatalog = async (req, res) => {
   try {
-    const ebooks = await ebookModel.find({}).exec();
+    const ebooks = await eBookModel.find({}).exec();
     return res.status(200).json({ result: ebooks, message: "Success" });
   } catch (err) {
     console.log(err);
@@ -37,21 +37,24 @@ const populateCatalog = async (req, res) => {
  * @param {HttpResponse} res response object
  * @returns json object with message and queried ebook
  */
-const get_eBook = async (req, res) => {
-  const { id } = req.params;
+const getEbook = async (req, res) => {
+  const { id } = req.body;
   if (!id) {
     return res
         .status(400)
         .json({ message: "ebook id is required" });
   }
   try {
-    const ebook = await ebookModel.findById(id).exec();
-    return res.status(200).json({ result: ebook, message: "Success" });
+    const ebookDocument = await eBookModel.findById(id).exec();
+    if(!ebookDocument) {
+      return res.status(400).json({ message: "No ebook found with that ID"});
+    }
+    return res.status(200).json({ result: ebookDocument, message: "Success" });
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     return res
         .status(500)
-        .json({ message: "Error getting ebook" });
+        .json({ error: err, message: "Error getting ebook" });
   }
 };
 
@@ -97,9 +100,9 @@ const get_eBook = async (req, res) => {
 const addEbook = async (req, res) => {
 try{
   let {
-    author,
+    authorId,
     publisher,
-    genre,
+    genreId,
     title,
     numberOfPages,
     ISBN,
@@ -112,9 +115,9 @@ try{
   const maxAvailableCopies = 0;
 
   if (
-      !author ||
+      !authorId ||
       !publisher ||
-      !genre ||
+      !genreId ||
       !title ||
       !numberOfPages ||
       !ISBN ||
@@ -128,8 +131,8 @@ try{
   }
 
   if (
-      !mongoose.isValidObjectId(author) ||
-      !mongoose.isValidObjectId(genre)
+      !mongoose.isValidObjectId(authorId) ||
+      !mongoose.isValidObjectId(genreId)
   ) {
     return res.status(400).json({ message: "Invalid author or genre" });
   }
@@ -147,33 +150,33 @@ try{
   //       .status(400)
   //       .json({ message: "Invalid genre id" });
   // }
-  const { user, roles } = req;
-  if (!user || !roles) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  const User = userModel.findOne({ username: user }).exec();
-  if (!User) {
-    return res
-        .status(401)
-        .json({ message: "Invalid user, unauthorized" });
-  }
-
-  if (
-      !roles.includes(ROLES_LIST.ADMIN) //&&
-      //!(author.user.toString() === User._id.toString())
-  ) {
-    return res
-        .status(401)
-        .json({
-          message:
-              "Unauthorized, you may not create an ebook under another author's name",
-        });
-  }
+  // const { user, roles } = req;
+  // if (!user || !roles) {
+  //   return res.status(401).json({ message: "Unauthorized" });
+  // }
+  // const User = userModel.findOne({ username: user }).exec();
+  // if (!User) {
+  //   return res
+  //       .status(401)
+  //       .json({ message: "Invalid user, unauthorized" });
+  // }
+  //
+  // if (
+  //     !roles.includes(ROLES_LIST.ADMIN) //&&
+  //     //!(author.user.toString() === User._id.toString())
+  // ) {
+  //   return res
+  //       .status(401)
+  //       .json({
+  //         message:
+  //             "Unauthorized, you may not create an ebook under another author's name",
+  //       });
+  // }
 
   // check if ebook with same author and title and description already exists
-  const existingebook = await ebookModel
+  const existingebook = await eBookModel
       .findOne({
-        author,
+        authorId,
         title,
         description,
       })
@@ -186,10 +189,10 @@ try{
 
   let totalCopies = availableCopies;
   let holdQueue = [];
-  const ebook = await ebookModel.create({
-    author,
+  const createdEbook = await eBookModel.create({
+    author: authorId,
     publisher,
-    genre,
+    genre: genreId,
     title,
     numberOfPages,
     ISBN,
@@ -202,20 +205,29 @@ try{
   });
 
   // add ebook to author's ebooks
-  author.ebooks.unshift(ebook);
-  const updatedauthor = await author.save();
+  const authorDocument = authorModel.findById(authorId);//, function (err, docs) {
+  //   if (err){
+  //     console.log(err);
+  //   }
+  //   else{
+  //     console.log("Result : ", docs);
+  //   }
+  // });;
+  console.log(authorDocument);
+  authorDocument.ebooks.unshift(createdEbook);//.ebooks.unshift(createdEbook);
+  //const updatedauthor = await authorDocument.sa
 
   // add ebook to genre's ebooks
-  ebook.genre.unshift(genre);
-  const updatedGenre = await Genre.save();
+  // ebook.genre.unshift(genre);
+  // const updatedGenre = await Genre.save();
 
-   return res.status(200).json({result: ebook, message: "Success"});
+   return res.status(200).json({result: createdEbook, message: "Success"});
 
   } catch (err) {
     console.log(err);
     return res
         .status(500)
-        .json({ message: "Error creating ebook" });
+        .json({ message: `Error creating ebook: ${err}` });
   }
 };
 
@@ -261,10 +273,10 @@ try{
  * @param {HttpResponse} res response object
  * @returns json object with message and created genre
  */
-const initialize_eBook = async (req, res) => {
+/*const initialize_eBook = async (req, res) => {
   const { user, roles } = req;
   const {
-    author,
+    authorId,
     publisher,
     genre,
     title,
@@ -277,22 +289,22 @@ const initialize_eBook = async (req, res) => {
     formatType,
   } = req.body;
 
-  let coverImage = "";
-  let format = "";
+  // let coverImage = "";
+  // let format = "";
 
   if (!user || !roles) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  if (!author || !genre || !title || !numberOfPages || !description || !publisheDate || !formatType) {
+  if (!authorId || !genre || !title || !numberOfPages || !description || !publishDate || !formatType) {
     return res.status(400).json({ message: "Missing inputs" });
   }
 
   try {
-    const author = await authorModel.findOne({ username: author }).exec();
-    if (!author) {
+    const foundAuthor = await authorModel.findOne({ _id: authorId }).exec();
+    if (!foundAuthor) {
       return res.status(400).json({ message: "Invalid author" });
     }
-    let Genre = await genreModel.findOne({ name: genre }).exec();
+    let Genre = await genreModel.findOne({ _id: genre }).exec();
     if (!Genre) {
       // create genre if it doesn't exist
       const newGenre = await genreModel.create({ name: genre });
@@ -300,14 +312,14 @@ const initialize_eBook = async (req, res) => {
     }
 
     // check if ebook with same author and title and description already exists
-    const existingebook = await ebookModel.findOne({ author: author._id, title, description }).exec();
+    const existingebook = await eBookModel.findOne({ author: authorId._id, title, description }).exec();
     if(existingebook) {
       return res.status(400).json({ message: "ebook with same name, title, and description already exists" });
     }
 
     // create ebook
-    const ebook = await ebookModel.create({
-      author: author._id,
+    const ebook = await eBookModel.create({
+      author: authorId._id,
       genre: Genre._id,
       publisher,
       title,
@@ -329,19 +341,19 @@ const initialize_eBook = async (req, res) => {
     });
 
     // create ebook listing
-    const listing = await listedebookModel.create({
-      creator: author._id,
+    const listing = await listedEbookModel.create({
+      creator: authorId._id,
       ebook: ebook._id,
       formats: [new_format._id]
     });
 
     // add ebook to author's ebooks
-    author.ebooks.unshift(ebook);
-    const updatedauthor = await author.save();
+    authorId.ebooks.unshift(ebook);
+    const updatedauthor = await authorId.save();
 
     // add ebook to genre's ebooks
-    Genre.ebooks.unshift(ebook);
-    const updatedGenre = await Genre.save();
+    // Genre.ebooks.unshift(ebook);
+    // const updatedGenre = await Genre.save();
 
     return res.status(200).json({ result: ebook, message: "Success" });
   } catch (err) {
@@ -397,11 +409,11 @@ const initialize_eBook = async (req, res) => {
  * @param {HttpResponse} res response object
  * @returns json object with message and updated ebook
  */
-const update_ebook_Information = async (req, res) => {
+const updateEbookInformation = async (req, res) => {
   try {
     let {
-      _id,
-      author,
+      eBookId,
+      authorId,
       publisher,
       genre,
       title,
@@ -410,14 +422,14 @@ const update_ebook_Information = async (req, res) => {
       description,
       publishDate,
       coverImageURL,
-      //formatType,
+      formatType,
       availableCopies,
       totalCopies,
       holdQueue
     } = req.body;
     if (
-        !_id ||
-        !author ||
+        !eBookId ||
+        !authorId ||
         !publisher ||
         !genre ||
         !title ||
@@ -426,7 +438,7 @@ const update_ebook_Information = async (req, res) => {
         !description ||
         !publishDate ||
         !coverImageURL||
-        //!formatType ||
+        !formatType ||
         !availableCopies ||
         !totalCopies ||
         !holdQueue
@@ -435,34 +447,35 @@ const update_ebook_Information = async (req, res) => {
           .status(400)
           .json({ message: "Invalid request inputs." });
       }
-      const ebookToUpdate = await ebookModel.findById(ebookId).exec();
+      const ebookToUpdate = await eBookModel.findById(eBookId).exec();
       if (!ebookToUpdate) {
         return res
             .status(400)
-            .json({ message: `Invalid ebook id ${ebookId}` });
+            .json({ message: `Invalid ebook id ${eBookId}` });
       }
 
     // ensure user is admin or author of ebook being edited
-    const { user, roles } = req;
-    if (!user || !roles) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const User = userModel.findOne({ username: user }).exec();
-    if (!User) {
-      return res
-          .status(401)
-          .json({ message: "Invalid user, unauthorized" });
-    }
-    if (!(await canAccess(user, roles, ebookId))) {
-      return res
-          .status(401)
-          .json({
-            message: "Unauthorized, you may not edit this ebook",
-          });
-    }
+    // const { user, roles } = req;
+    // if (!user || !roles) {
+    //   return res.status(401).json({ message: "Unauthorized" });
+    // }
+    // const User = userModel.findOne({ username: user }).exec();
+    // if (!User) {
+    //   return res
+    //       .status(401)
+    //       .json({ message: "Invalid user, unauthorized" });
+    // }
+    // if (!(await canAccess(user, roles, ebookId))) {
+    //   return res
+    //       .status(401)
+    //       .json({
+    //         message: "Unauthorized, you may not edit this ebook",
+    //       });
+    // }
 
     // if author is different, remove ebook from old author's ebooks and
     // add to new author's ebooks
+    let author = authorModel.findById(authorId);
     if (ebookToUpdate.author.toString() !== author) {
       const oldauthor = await authorModel.findById(ebookToUpdate.author).exec();
       oldauthor.ebooks = oldauthor.ebooks.filter(
@@ -521,7 +534,9 @@ const update_ebook_Information = async (req, res) => {
  *
  * Expects:
  * ```json
- * { "ebookId": String }
+ * {
+ *  "ebookId": String (UUID)
+ * }
  * ```
  * ebookId is required, with id being the object id of the ebook to delete in String format
  *
@@ -529,7 +544,7 @@ const update_ebook_Information = async (req, res) => {
  * @param {HttpResponse} res response object
  * @returns json object with message
  */
-const deleteebook = async (req, res) => {
+const deleteEbook = async (req, res) => {
   try {
     const { ebookId } = req.body;
     if (!ebookId) {
@@ -537,7 +552,7 @@ const deleteebook = async (req, res) => {
           .status(400)
           .json({ message: "ebook id is required" });
     }
-    const ebookToDelete = await ebookModel.findById(ebookId).exec();
+    const ebookToDelete = await eBookModel.findById(ebookId).exec();
     if (!ebookToDelete) {
       return res
           .status(400)
@@ -554,7 +569,7 @@ const deleteebook = async (req, res) => {
     genre.ebooks = genre.ebooks.filter((ebook) => ebook != ebookId);
     await genre.save();
 
-    await ebookModel.findByIdAndDelete(ebookId).exec();
+    await eBookModel.findByIdAndDelete(ebookId).exec();
     return res.status(200).json({ message: "Success" });
   }
   catch (err) {
@@ -580,13 +595,13 @@ const canAccess = async (username, roles, ebookId) => {
 
   try {
     const currentauthor = authorModel.findOne({ user: username }).exec();
-    const currentebook = ebookModel.findById(ebookId).exec();
-    if (!currentauthor || !currentebook) {
+    const currentebook = eBookModel.findById(ebookId).exec();
+    if (!(await currentauthor) || !(await currentebook)) {
       return false;
     }
     if (
         !roles.includes(ROLES_LIST.ADMIN) &&
-        currentauthor._id != currentebook.author
+        (await currentauthor)._id != currentebook.author
     ) {
       return false;
     }
@@ -597,43 +612,56 @@ const canAccess = async (username, roles, ebookId) => {
   }
   return true;
 };
-
+/*
+* Takes in a userID and eBookID in the body
+* {
+*   userId: UUID,
+*   eBookId: UUID
+* }
+ */
 const Return = async (req,res) => { //eBookToReturn)
   try {
-    let userReturning = req.body.user;
-    let eBookToReturn = req.body.eBook;
+    let userReturningId = req.body.userId;
+    let eBookToReturnId = req.body.eBookId;
     if (
-        !userReturning ||
-        !eBookToReturn
+        !userReturningId ||
+        !eBookToReturnId
     ) {
       return res.status(400).json({ message: "Missing inputs" });
     }
     let positionOfBook = null;
-    for(let i = 0; i < userReturning.checkedOutBookIds.length; i++){
-      if(userReturning.checkedOutBookIds[i] === eBookToReturn._id){
+    let userReturning = userModel.findById(userReturningId).exec();
+    for(let i = 0; i < (await userReturning).checkedOutBookIds.length; i++){
+      if(userReturning.checkedOutBookIds[i] === eBookToReturnId){
         positionOfBook = i;
         break;
       }
   }
 
-    if(positionOfBook == null){
+    if(positionOfBook === null){
       console.log("You do not currently have that book, return failed");
       return res.status(400).json({ message: "You do not currently have that book, return failed" });
     }
-
-    eBookToReturn.availableCopies++;
-    userReturning.checkedOutBookIds.splice(positionOfBook, 1);
+    let eBookToReturn = eBookModel.findById(eBookToReturnId);
+    (await eBookToReturn).availableCopies++; //Increase available copies to reflect the
+    (await userReturning).checkedOutBookIds.splice(positionOfBook, 1);
     return res.status(200).json({result:"Success", message: "Book Successfully Returned",
                                 ebook: eBookToReturn,
                                 user: userReturning});
 
-    if(!eBookToReturn.holdQueue.isEmpty){
-      let userRecievingBook = eBookToReturn.holdQueue.dequeue();
-      //userRecievingBook.CheckOut(eBookToReturn);
-      console.log(userRecievingBook + " recieved " + eBookToReturn);
-      return res.status(200).json({ result: "Success", message: userRecievingBook + " recieved " + eBookToReturn });
-    }
+    //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
 
+    if(!(await eBookToReturn).holdQueue.isEmpty){
+      let userRecievingBookId = (await eBookToReturn).holdQueue.dequeue();
+      //userRecievingBook.CheckOut(eBookToReturn);
+      let userRecievingDocument = userModel.findById(userRecievingBookId);
+      (await userRecievingDocument).checkedOutBookIds.push(eBookToReturnId);
+      (await eBookToReturn).availableCopies--;
+      await userRecievingDocument.save();
+      console.log("User with UUID " + userRecievingBookId + " received book with UUID " + eBookToReturnId);
+      return res.status(200).json({ result: "Success", message: userRecievingBookId + " received " + eBookToReturnId });
+    }
+    await eBookToReturn.save();
     return res.status(200).json({ result: "ebookReturned" , message: "Success" }); 
   } catch (err) {
     console.log(err);
@@ -641,27 +669,36 @@ const Return = async (req,res) => { //eBookToReturn)
   }
 };
 
-
+/*
+* Takes in 2 arguments in the body
+* {
+*   userId: UUID,
+*   eBookId: UUID
+* }
+ */
 const CheckOut = async (req, res) => {
-  let userCheckingOut = req.body.user;
-  let eBookToCheckOut = req.body.eBook;
-  if(!userCheckingOut){
-    return res.status(400).json({ message: "Missing User"});
+  let userCheckingOutId = req.body.userId;
+  let eBookToCheckOutId = req.body.eBookId;
+  if(!userCheckingOutId){
+    return res.status(400).json({ message: "Missing or invalid User ID"});
   }
   if(!eBookToCheckOut){
-    return res.status(400).json({ message:"Missing eBook"});
+    return res.status(400).json({ message:"Missing or invalid eBook ID"});
   }
   try{
-    if(eBookToCheckOut.availableCopies < 1){
+    let eBookToCheckOut = eBookModel.findById(eBookToCheckOutId);
+    if((await eBookToCheckOut).availableCopies < 1){
       console.log("Not enough copies, checkout failed");
       return res.status(401).json({ message:"Not enough copies, checkout failed"});
     }
-    if(userCheckingOut.checkedOutBookIds.length >= 5){
+    let userCheckingOut = userModel.findById(userCheckingOutId);
+    if((await userCheckingOut).checkedOutBookIds?.length >= 5){
       console.log("Too many books checked out, checkout failed");
       return res.status(401).json({ message:"Too many books checked out, checkout failed"});
     }
     eBookToCheckOut.availableCopies--;
-    userCheckingOut.checkedOutBookIds.push(eBookToCheckOut._id);
+    await eBookToCheckOut.save();
+    userCheckingOut.checkedOutBookIds.push(eBookToCheckOutId);
 //    db.collection("ebook").findByIdAndUpdate({_id:eBookToCheckOut._id}, 
 //                                {$set: {"availableCopies":eBookToCheckOut.availableCopies}});
     console.log("Checkout Success");
@@ -675,37 +712,46 @@ const CheckOut = async (req, res) => {
     return res.status(400).json({ message:"Checkout failed"});
   }
 }
-
+/*
+* Hold takes in 2 arguments in the body
+* {
+*   userId: UUID,
+*   eBookId: UUID
+* }
+* userId is the ID of the user that wants to hold the book
+* eBookId is the ID of the book that the user wants to borrow
+ */
 const Hold = async (req, res) => {
-  let userHolding = req.body.user;
-  let eBookToHold = req.body.eBook;
-  if(!userHolding){
-    return res.status(400).json({ message:"Missing User"})
+  let userHoldingId = req.body.userId;
+  let eBookToHoldId = req.body.eBookId;
+  if(!userHoldingId){
+    return res.status(400).json({ message: "Missing User"})
   }
-  if(!eBookToHold){
-    return res.status(400).json({ message:"Missing eBook"})
+  if(!eBookToHoldId){
+    return res.status(400).json({ message: "Missing eBook"})
   }
   try{
-    eBookToHold.holdQueue.push(userHolding._id);
+    const eBookToHold = await eBookModel.findById(eBookToHoldId);
+    (await eBookToHold).holdQueue.push(userHolding._id);
     console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
     return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line.",
                               ebook: eBookToHold,
-                              user: userHolding});
+                              user: userHoldingId});
   }
   catch (err) {
     console.log(err);
-    console.log("Error Holding Book");
-    return res.status(400).json({ message:"Error Holding Book"});
+    //console.log("Error Holding Book");
+    return res.status(400).json({ error: err, message: "Error Holding Book"});
   }
 }
 
 module.exports = {
   populateCatalog,
-  get_eBook,
+  get_eBook: getEbook,
   addEbook,
-  initialize_eBook,
-  update_ebook_Information,
-  deleteebook,
+  //initialize_eBook,
+  updateEbookInformation,
+  deleteEbook,
   Return,
   CheckOut,
   Hold

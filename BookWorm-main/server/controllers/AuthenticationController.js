@@ -18,7 +18,7 @@ if (!env) {
 const mongoose = require("mongoose");
 const { genreModel } = require("../models/Genre");
 const { userModel } = require("../models/User");
-const { ebookModel } = require("../models/Ebook");
+const { eBookModel } = require("../models/Ebook");
 const { listedebookModel } = require("../models/ListedEbook");
 const { authorModel } = require("../models/Author");
 const ROLES_LIST = require("../config/RolesList");
@@ -226,15 +226,15 @@ const login = async (req, res) => {
 
     // Saving refreshToken with current user
     foundUser.refreshToken = refreshToken;
-    const result = await foundUser.save();
+    await foundUser.save();
 
     // Creates Secure Cookie with refresh token
-    // res.cookie("jwt", refreshToken, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "None",
-    //   maxAge: 24 * 60 * 60 * 1000,
-    // });
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     // Send authorization roles and access token to user
     return res
