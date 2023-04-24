@@ -40,7 +40,10 @@ const userSchema = new mongoose.Schema({
     default: 0,
   },
   checkedOutBookIds: {
-    type: [String],
+    type: [{
+      "bookID": mongoose.Schema.Types.ObjectId,
+      "checkoutDate" : Date 
+    }],
     default: [],
   },
   status: {

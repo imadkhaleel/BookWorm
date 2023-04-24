@@ -619,7 +619,7 @@ const canAccess = async (username, roles, ebookId) => {
 *   eBookId: UUID
 * }
  */
-const Return = async (req,res) => { //eBookToReturn)
+const ReturnRequest = async (req,res) => { //eBookToReturn)
   try {
     let userReturningId = req.body.userId;
     let eBookToReturnId = req.body.eBookId;
@@ -629,40 +629,9 @@ const Return = async (req,res) => { //eBookToReturn)
     ) {
       return res.status(400).json({ message: "Missing inputs" });
     }
-    let positionOfBook = null;
-    let userReturning = userModel.findById(userReturningId).exec();
-    for(let i = 0; i < (await userReturning).checkedOutBookIds.length; i++){
-      if(userReturning.checkedOutBookIds[i] === eBookToReturnId){
-        positionOfBook = i;
-        break;
-      }
-  }
-
-    if(positionOfBook === null){
-      console.log("You do not currently have that book, return failed");
-      return res.status(400).json({ message: "You do not currently have that book, return failed" });
-    }
-    let eBookToReturn = eBookModel.findById(eBookToReturnId);
-    (await eBookToReturn).availableCopies++; //Increase available copies to reflect the
-    (await userReturning).checkedOutBookIds.splice(positionOfBook, 1);
-    return res.status(200).json({result:"Success", message: "Book Successfully Returned",
-                                ebook: eBookToReturn,
-                                user: userReturning});
-
-    //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
-
-    if(!(await eBookToReturn).holdQueue.isEmpty){
-      let userRecievingBookId = (await eBookToReturn).holdQueue.dequeue();
-      //userRecievingBook.CheckOut(eBookToReturn);
-      let userRecievingDocument = userModel.findById(userRecievingBookId);
-      (await userRecievingDocument).checkedOutBookIds.push(eBookToReturnId);
-      (await eBookToReturn).availableCopies--;
-      await userRecievingDocument.save();
-      console.log("User with UUID " + userRecievingBookId + " received book with UUID " + eBookToReturnId);
-      return res.status(200).json({ result: "Success", message: userRecievingBookId + " received " + eBookToReturnId });
-    }
-    await eBookToReturn.save();
-    return res.status(200).json({ result: "ebookReturned" , message: "Success" }); 
+    res = returnBook(userReturningId,eBookToReturnId);
+    return res;
+ 
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Error Returning ebook" });
@@ -745,6 +714,74 @@ const Hold = async (req, res) => {
   }
 }
 
+function returnBook(userReturningID,eBookToReturnId){
+  let positionOfBook = null;
+  let userReturning = userModel.findById(userReturningId).exec();
+  for(let i = 0; i < (userReturning).checkedOutBookIds.length; i++){
+    if(userReturning.checkedOutBookIds[i] === eBookToReturnId){
+      positionOfBook = i;
+      break;
+    }
+}
+
+  if(positionOfBook === null){
+    console.log("You do not currently have that book, return failed");
+    return res.status(400).json({ message: "You do not currently have that book, return failed" });
+  }
+  let eBookToReturn = eBookModel.findById(eBookToReturnId);
+  ( eBookToReturn).availableCopies++; //Increase available copies to reflect the
+  (userReturning).checkedOutBookIds.splice(positionOfBook, 1);
+
+
+  //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
+
+  if(!(eBookToReturn).holdQueue.isEmpty){
+    let userRecievingBookId = (eBookToReturn).holdQueue.dequeue();
+    //userRecievingBook.CheckOut(eBookToReturn);
+    let userRecievingDocument = userModel.findById(userRecievingBookId);
+    (userRecievingDocument).checkedOutBookIds.push(eBookToReturnId);
+    (eBookToReturn).availableCopies--;
+    userRecievingDocument.save();
+    console.log("User with UUID " + userRecievingBookId + " received book with UUID " + eBookToReturnId);
+    return res.status(200).json({ result: "Success", message: userRecievingBookId + " received " + eBookToReturnId });
+  }
+  eBookToReturn.save();
+  //return res.status(200).json({ result: "ebookReturned" , message: "Success" });
+  return res.status(200).json({result:"Success", message: "Book Successfully Returned",
+                              ebook: eBookToReturn,
+                              user: userReturning});
+
+}
+
+function getOverdueBooks() {
+  const now = new Date();
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  /*
+  let user2 = userModel.findById('641d0ab91cb282514bb99bba',function(err, docs) {
+    if(err){
+      console.log(err);
+    }
+    else{
+      console.log(docs);
+      return docs;
+    }
+  });
+  //console.log(user2);
+  */
+  let userstest = [{"_id":{"$oid":"641d0a14fb81ab902b98f400"},"roles":"[3]","dateOfBirth":"01/01/2001","firstName":"Moishe","lastName":"Lerner","userName":"MLerner","password":"Moishe123","loginAttempts":"0","checkedOutBookIds":[],"status":"Normal","email1":"moishe@gmail.com"}]
+  console.log(userModel.find());
+  return userstest.filter(user => 
+    user.checkedOutBookIds.filter(book => book.checkoutDate && (book.checkoutDate < twoWeeksAgo)));
+}
+
+
+function returnOverdueBooks() {
+  const overdueBooks = getOverdueBooks();
+  overdueBooks.forEach(user => {
+    user.checkedOutBookIds.forEach(book => returnBook(user._id, book._id));
+  });
+}
+
 module.exports = {
   populateCatalog,
   get_eBook: getEbook,
@@ -752,7 +789,8 @@ module.exports = {
   //initialize_eBook,
   updateEbookInformation,
   deleteEbook,
-  Return,
+  ReturnRequest,
   CheckOut,
-  Hold
+  Hold,
+  returnOverdueBooks
 };

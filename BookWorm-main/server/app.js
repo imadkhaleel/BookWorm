@@ -214,7 +214,8 @@ app.get('/search', function(req, res) {
   });
 });
 const { Hold } = require("./controllers/EbookController");
-app.post('/Hold', (req, res) => {
+const EbookController = require("./controllers/EbookController.js");
+app.patch('/Hold', (req, res) => {
   EBookController.Hold(req, res);
 });
 // app.post('/Hold', bodyParser, (req, res) => {
@@ -223,14 +224,17 @@ app.post('/Hold', (req, res) => {
 app.post('/Add', (req, res) => {
   EBookController.addEbook(req, res);
 })
-app.put('/Return', (req, res) => {
+app.patch('/Return', (req, res) => {
   EBookController.Return(req, res);
 });
-app.put('/CheckOut', (req, res) => {
+app.patch('/CheckOut', (req, res) => {
   EBookController.CheckOut(req, res);
 });
 
 app.put('/register',  (req, res) => {
   AuthController.register(req,res);
 });
+
+//auto return function
+setInterval(EbookController.returnOverdueBooks, 1000);//24 * 60 * 60 * 1000); //check every 24 hours
 
