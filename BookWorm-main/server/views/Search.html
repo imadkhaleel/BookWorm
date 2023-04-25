@@ -4,82 +4,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search Bar</title>
   <link rel="stylesheet" href="style.css">
+  <script src="HomePageScript.js"></script>
   <style>
-    *{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
+   *{
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   overflow: hidden;
+   font-family: 'Poppins', sans-serif;
+
+
+}
+@keyframes transitionIn{
+from{
+   opacity: 0;
+   transform: rotateX(-10deg);
+}
+
+
+to{
+   opacity: 1;
+   transform: rotateX(0);
+}
+
 
 }
 body {
-    background-image: linear-gradient(rgba(236, 236, 211, 0.9), rgba(49, 119, 67, 0.9)), url("Lib BG.png.jpg");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+   background-image: linear-gradient(rgba(236, 236, 211, 0.9), rgba(49, 119, 67, 0.9)), url("Lib BG.png.jpg");
+   background-position: center;
+   background-size: cover;
+   background-repeat: no-repeat;
+   animation:transitionIn 2.0s;
 }
 .siteSearch{
-    position: center;
-    padding-left: 11cm;
-    font-size: 35px;
-    top: 640px;
-    left: 965px;
+   position: center;
+   padding-left: 11cm;
+   font-size: 35px;
+   top: 640px;
+   left: 965px;
+
+
 
 
 }
+
+
 
 
 .container{
-    width: 100%;
-    min-height: 100vh;
-    padding: 5%;
+   width: 100%;
+   min-height: 100vh;
+   padding: 5%;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
 
 }
 .search-bar{
-    width: 100%;
-    max-width: 700px;
-    background: rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    border-radius: 60px;
-    padding: 10px 20px;
-    backdrop-filter: blur(4px) saturate(180%);
+   width: 100%;
+   max-width: 700px;
+   background: rgba(255,255,255,0.2);
+   display: flex;
+   align-items: center;
+   border-radius: 60px;
+   padding: 10px 20px;
+   backdrop-filter: blur(4px) saturate(180%);
+
 
 }
 .search-bar input{
-    background: transparent;
-    flex: 1;
-    border: 0;
-    outline: none;
-    padding: 24px 20px;
-    font-size: 20px;
-    color: #cac7ff;
+   background: transparent;
+   flex: 1;
+   border: 0;
+   outline: none;
+   padding: 24px 20px;
+   font-size: 20px;
+   color: #cac7ff;
 }
 ::placeholder{
-    color: #33333d;
+   color: #33333d;
 }
 .search-bar button img{
-    width: 25px;
+   width: 25px;
 }
 .search-bar button {
-    border: 0;
-    border-radius: 50%;
-    width: 60px;
-    height:60px;
-    background: rgba(231, 231, 193, 0.9);
-    cursor: pointer;
+   border: 0;
+   border-radius: 50%;
+   width: 60px;
+   height:60px;
+   background: rgba(231, 231, 193, 0.9);
+   cursor: pointer;
 }
 .search-bar ::placeholder{
-    font-style: italic;
+   font-style: italic;
 }
 
 
-  </style>
+
+
+ </style>
 </head>
 <body>
 <div class="siteSearch">
@@ -87,11 +113,14 @@ body {
 </div>
 <div class="container">
 
+
   <form action="" class="search-bar">
     <input type="text" placeholder="Harry Potter, Great Expectations, etc ..." name  = "q">
     <button type="submit"><img src ="search.png"> </button>
   </form>
 </div>
 
+
 </body>
 </html>
+

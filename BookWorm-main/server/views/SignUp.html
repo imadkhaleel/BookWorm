@@ -2,9 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <style>
+   body {
+     background-color: #2E8B57;
+     margin: 0;
+     padding: 0;
+     animation:transitionIn 2.0s;
+   }
+   .container {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+   }
+   @keyframes transitionIn{
+     from{
+         opacity: 0;
+         transform: rotateX(-10deg);
+     }
+
+
+     to{
+         opacity: 1;
+         transform: rotateX(0);
+     }
+
+
+     }
+     ul {
+ margin: 0;
+ padding: 0;
+ list-style: none;
+
+
+}
+   .box {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     width: 60%;
+     height: 80%;
+     background-color: white;
+     border-radius: 10px;
+     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+   }
+   .image {
+     width: 50%;
+     height: 100%;
+     background-image: url('LibrarySignUp.jpg');
+     background-size: cover;
+     background-position: center;
+     border-top-left-radius: 10px;
+     border-bottom-left-radius: 10px;
+   }
+   form {
+     width: 50%;
+     height: 100%;
+     padding: 20px;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+   }
+   h1 {
+     color: #2B3A34;
+     margin-bottom: 30px;
+     text-align: center;
+   }
+   input {
+     margin-bottom: 20px;
+     padding: 10px;
+     width: 100%;
+     border-radius: 5px;
+     border: none;
+   }
+   button {
+     background-color: #2B3A34;
+     color: white;
+     padding: 10px 20px;
+     border-radius: 5px;
+     border: none;
+     cursor: pointer;
+   }
+ </style>
 </head>
 <body>
-$END$
+<div class="container">
+  <div class="box">
+    <div class="image"></div>
+    <form>
+      <h1>Sign Up</h1>
+      <input type="text" placeholder="Name">
+      <input type="text" placeholder="Email">
+      <input type="password" placeholder="Password">
+      <input type="age" placeholder="Age">
+      <button>Sign Up</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
+
