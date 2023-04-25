@@ -60,10 +60,7 @@ const eBookSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "user"
   },
-  pdf: {
-    type: pdf,
-    required: true
-  }
+  pdf: {}
 });
 
 module.exports = {
