@@ -225,16 +225,16 @@ app.post('/Add', (req, res) => {
   EBookController.addEbook(req, res);
 })
 app.patch('/Return', (req, res) => {
-  EBookController.Return(req, res);
+  EBookController.ReturnRequest(req, res);
 });
 app.patch('/CheckOut', (req, res) => {
   EBookController.CheckOut(req, res);
 });
-
 app.put('/register',  (req, res) => {
   AuthController.register(req,res);
 });
 
 //auto return function
-setInterval(EbookController.returnOverdueBooks, 1000);//24 * 60 * 60 * 1000); //check every 24 hours
+EbookController.returnOverdueBooks(); //Line for testing returnOverdueBooks(), comment out when done
+setInterval(EbookController.returnOverdueBooks, 24 * 60 * 60 * 1000); //check every 24 hours
 

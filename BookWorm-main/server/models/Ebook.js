@@ -59,6 +59,10 @@ const eBookSchema = new mongoose.Schema({
   holdQueue: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "user"
+  },
+  pdf: {
+    type: pdf,
+    required: true
   }
 });
 

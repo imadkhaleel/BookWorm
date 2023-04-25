@@ -111,6 +111,7 @@ try{
     coverImageURL,
     availableCopies,
     formatType,
+    filePath
   } = req.body;
   const maxAvailableCopies = 0;
 
@@ -125,7 +126,8 @@ try{
       !publishDate ||
       !coverImageURL ||
       !availableCopies ||
-      !formatType
+      !formatType ||
+      !filePath
   ) {
     return res.status(400).json({message: "Missing inputs"});
   }
@@ -189,6 +191,12 @@ try{
 
   let totalCopies = availableCopies;
   let holdQueue = [];
+  let data = fs.readFile(filePath, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+    return data;
+  });
   const createdEbook = await eBookModel.create({
     author: authorId,
     publisher,
@@ -202,6 +210,7 @@ try{
     availableCopies,
     totalCopies,
     holdQueue,
+    data,
   });
 
   // add ebook to author's ebooks
@@ -667,7 +676,7 @@ const CheckOut = async (req, res) => {
     }
     eBookToCheckOut.availableCopies--;
     await eBookToCheckOut.save();
-    userCheckingOut.checkedOutBookIds.push(eBookToCheckOutId);
+    userCheckingOut.checkedOutBookIds.push({"bookID": eBookToCheckOutId, "checkoutDate": new Date()});
 //    db.collection("ebook").findByIdAndUpdate({_id:eBookToCheckOut._id}, 
 //                                {$set: {"availableCopies":eBookToCheckOut.availableCopies}});
     console.log("Checkout Success");
@@ -718,7 +727,7 @@ function returnBook(userReturningID,eBookToReturnId){
   let positionOfBook = null;
   let userReturning = userModel.findById(userReturningId).exec();
   for(let i = 0; i < (userReturning).checkedOutBookIds.length; i++){
-    if(userReturning.checkedOutBookIds[i] === eBookToReturnId){
+    if(userReturning.checkedOutBookIds[i].bookId === eBookToReturnId){
       positionOfBook = i;
       break;
     }
@@ -729,7 +738,7 @@ function returnBook(userReturningID,eBookToReturnId){
     return res.status(400).json({ message: "You do not currently have that book, return failed" });
   }
   let eBookToReturn = eBookModel.findById(eBookToReturnId);
-  ( eBookToReturn).availableCopies++; //Increase available copies to reflect the
+  (eBookToReturn).availableCopies++; //Increase available copies to reflect the return
   (userReturning).checkedOutBookIds.splice(positionOfBook, 1);
 
 
