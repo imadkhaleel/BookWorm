@@ -230,6 +230,6 @@ app.put('/register',  (req, res) => {
 });
 
 //auto return function
-EbookController.returnOverdueBooks(); //Line for testing returnOverdueBooks(), comment out when done
+setInterval(EbookController.returnOverdueBooks, 60*1000); //Line for testing returnOverdueBooks(), comment out when done
 setInterval(EbookController.returnOverdueBooks, 24 * 60 * 60 * 1000); //check every 24 hours
 
