@@ -49,9 +49,9 @@ window.location.href = "About.html"
 
 
 /////////////Team/////////////////////////
-const About = document.getElementById('about-link')
+const Team = document.getElementById('about-link')
 browseLink.addEventListener('click', function(){
-//window.location.href = "Team.html"
+window.location.href = "teamPage.html"
 
 
 })
