@@ -223,7 +223,7 @@ app.patch('/Return', (req, res) => {
   EBookController.ReturnRequest(req, res);
 });
 app.patch('/CheckOut', (req, res) => {
-  EBookController.CheckOut(req, res);
+  EBookController.CheckOutRequest(req, res);
 });
 app.put('/register',  (req, res) => {
   AuthController.register(req,res);

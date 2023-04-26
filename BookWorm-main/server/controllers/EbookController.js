@@ -659,14 +659,20 @@ const ReturnRequest = async (req,res) => { //eBookToReturn)
 *   eBookId: UUID
 * }
  */
-const CheckOut = async (req, res) => {
+const CheckOutRequest = async (req, res) => {
   let userCheckingOutId = req.body.userId;
   let eBookToCheckOutId = req.body.eBookId;
+  return res = CheckOut(userCheckingOutId, eBookToCheckOutId, res);
+}
+
+async function CheckOut(userCheckingOutId, eBookToCheckOutId, res = null){
   if(!userCheckingOutId){
-    return res.status(400).json({ message: "Missing or invalid User ID"});
+    if(res) return res.status(400).json({ message: "Missing or invalid User ID"});
+    return false;
   }
   if(!eBookToCheckOutId){
-    return res.status(400).json({ message:"Missing or invalid eBook ID"});
+    if(res) return res.status(400).json({ message:"Missing or invalid eBook ID"});
+    return false;
   }
   try{
     let eBookToCheckOut = await eBookModel.findById(eBookToCheckOutId);
@@ -674,14 +680,24 @@ const CheckOut = async (req, res) => {
     if(!eBookToCheckOut) return res.status(404).json({ message:"No such eBook"});
     if(!userCheckingOut) return res.status(404).json({ message:"No such User"});
 
-    if((await eBookToCheckOut).availableCopies < 1){
+    if((eBookToCheckOut).availableCopies < 1){
       console.log("Not enough copies, checkout failed");
-      return res.status(401).json({ message:"Not enough copies, checkout failed"});
+      if(res) return res.status(406).json({ message:"Not enough copies, checkout failed"});
+      return false;
     }
-    if((await userCheckingOut).checkedOutBookIds?.length >= 5){
+    if((userCheckingOut).checkedOutBookIds?.length >= 5){
       console.log("Too many books checked out, checkout failed");
-      return res.status(401).json({ message:"Too many books checked out, checkout failed"});
+      if(res) return res.status(406).json({ message:"Too many books checked out, checkout failed"});
+      return false;
     }
+    for(let i = 0; i < (userCheckingOut).checkedOutBookIds.length; i++){
+      if(!userCheckingOut.checkedOutBookIds[i].bookID) continue;
+      if(userCheckingOut.checkedOutBookIds[i].bookID.toString() == eBookToCheckOutId){ 
+        console.log("You already have this book checked out, checkout failed");
+        if(res) return res.status(406).json({ message:"You already have this book checked out, checkout failed"});  
+        return false;
+      }
+  }
     eBookToCheckOut.availableCopies--;
     userCheckingOut.checkedOutBookIds.push({"bookID": eBookToCheckOutId, "checkoutDate": new Date()});
 //    db.collection("ebook").findByIdAndUpdate({_id:eBookToCheckOut._id}, 
@@ -689,9 +705,10 @@ const CheckOut = async (req, res) => {
     await eBookToCheckOut.save();
     await userCheckingOut.save();
     console.log("Checkout Success");
-    return res.status(200).json({ message:"Checkout Success!",
+    if(res) return res.status(200).json({ message:"Checkout Success!",
           ebook: eBookToCheckOut, 
           user: userCheckingOut});
+    return true;
   }
   catch (err) {
     console.log(err);
@@ -742,7 +759,7 @@ async function returnBook(userReturningId,eBookToReturnId, res = null){
       positionOfBook = i;
       break;
     }
-}
+  }
 
   if(positionOfBook === null){
     console.log("You do not currently have that book, return failed");
@@ -756,56 +773,28 @@ async function returnBook(userReturningId,eBookToReturnId, res = null){
 
   (await eBookToReturn).save();
   (await userReturning).save();
-  if(res) return res.status(200).json({message: "Returned Successfully!"});
-  console.log("Autoreturn successfully returned a book")
-  return;
-  //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
+  if(!res) console.log("Autoreturn successfully returned a book");
 
-  if(!(eBookToReturn).holdQueue.isEmpty){
-    let userRecievingBookId = (eBookToReturn).holdQueue.dequeue();
-    //userRecievingBook.CheckOut(eBookToReturn);
-    let userRecievingDocument = userModel.findById(userRecievingBookId);
-    (userRecievingDocument).checkedOutBookIds.push(eBookToReturnId);
-    (eBookToReturn).availableCopies--;
-    userRecievingDocument.save();
-    console.log("User with UUID " + userRecievingBookId + " received book with UUID " + eBookToReturnId);
-    if(res) return res.status(200).json({ result: "Success", message: userRecievingBookId + " received " + eBookToReturnId });
+  //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
+  try {
+    let userRecievingBookId;
+    if (userRecievingBookId = (eBookToReturn).holdQueue.shift()) {
+      CheckOut(userRecievingBookId, eBookToReturnId);
+      console.log("User with UUID " + userRecievingBookId + " received book with UUID " + eBookToReturnId);
+      if (res) return res.status(200).json({ result: "Success", message: userRecievingBookId + " received " + eBookToReturnId });
+    }
+    eBookToReturn.save();
+    //return res.status(200).json({ result: "ebookReturned" , message: "Success" });
   }
-  eBookToReturn.save();
-  //return res.status(200).json({ result: "ebookReturned" , message: "Success" });
+  catch(err) {
+    console.log(err);
+  }
   if(res) return res.status(200).json({result:"Success", message: "Book Successfully Returned",
                               ebook: eBookToReturn,
                               user: userReturning});
+  return;
 
 }
-
-// async function getOverdueBooks() {
-//   // const now = new Date();
-//   // const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-//   /*
-//   let user2 = userModel.findById('641d0ab91cb282514bb99bba',function(err, docs) {
-//     if(err){
-//       console.log(err);
-//     }
-//     else{
-//       console.log(docs);
-//       return docs;
-//     }
-//   });
-//   //console.log(user2);
-//   */
-//   //let userstest = [{"_id":{"$oid": "641d0a14fb81ab902b98f400"},"roles": [3],"dateOfBirth":"01/01/2001","firstName":"Moishe","lastName":"Lerner","userName":"MLerner","password":"Moishe123","loginAttempts":0,"checkedOutBookIds":[],"status":"Normal","email1":"moishe@gmail.com"}]
-//   //console.log(userModel.find());
-//   //return userModel.findById("641d0a14fb81ab902b98f400");//.where((u) => !u.ebooks.isEmpty());//.filter(user =>
-//     //user.checkedOutBookIds.filter(book => book.checkoutDate && (book.checkoutDate < twoWeeksAgo)));
-//   const now = new Date();
-//   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-//
-//   const sampleUser = await userModel.findOne({ _id: '643f5b722406dbc0f2837935' });
-//
-//   return sampleUser.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);  //Filter books from each user where the book is overdue
-// }
-
 
 // function to get users that have overdue ebooks
 //Another function to get overdue ebooks from the user
@@ -832,61 +821,24 @@ async function getOverdueBooksWithUser() {
   return overdueBooks;
 }
 
-// async function returnOverdueBooks() {
-//   const usersWithOverdueBooks = await getUsersWithOverdueBooks();
-//   const now = new Date();
-//   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-//   for (const user of usersWithOverdueBooks) {
-//     const currOverdueBooks = user.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);//await returnBook(book.userId, book._id);
-//     for(const booksToBeReturned of currOverdueBooks) {
-//       returnBook(user._id, booksToBeReturned._id)
-//     }
-//   }
-// }
 async function returnOverdueBooks() {
   const overdueBooksWithUsers = await getOverdueBooksWithUser();
   const now = new Date();
   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
   for (const overdueEbook of overdueBooksWithUsers) {
-    //console.log(overdueEbook);
-    returnBook(overdueEbook.user._id, overdueEbook.book)
-    //if (overdueEbook) { // Add a check for undefined or null
-      //const currOverdueBooks = user.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);
-      // for(const booksToBeReturned of currOverdueBooks) {
-      //   returnBook(user._id, booksToBeReturned._id)
-      // }
-    //}
+    returnBook(overdueEbook.user._id, overdueEbook.book);
   }
 }
 
-// function returnOverdueBooks() {
-  // const usersWithOverdueBooks = getUsersWithOverdueBooks();
-  // usersWithOverdueBooks.forEach(user => {
-  //   user.checkedOutBookIds.forEach(book => returnBook(user._id, book._id));
-  // });
-  // const twoWeeksInMillis = 14 * 24 * 60 * 60 * 1000
-  // const currentTime = new Date(Date.now());
-  // const timeDuration = new Date(currentTime.getTime() - twoWeeksInMillis)
-  // usersWithOverdueBooks.
-  // userModel.find({}, function (error, users) {
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //     users.forEach(function (user) {
-  //       user.checkedOutBookIds.filter()//console.log(user.firstName);
-  //     });
-  //   }
-  // });
-// }
 
 module.exports = {
   populateCatalog,
   get_eBook: getEbook,
   addEbook,
-  //initialize_eBook,
   updateEbookInformation,
   deleteEbook,
   ReturnRequest,
+  CheckOutRequest,
   CheckOut,
   Hold,
   returnOverdueBooks
