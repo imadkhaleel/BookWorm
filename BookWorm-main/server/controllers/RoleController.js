@@ -28,7 +28,7 @@ const getRoles = async (req, res) => {
  */
 const getRole = async (req, res) => {
   try {
-    const role = await roleModel.findById(req.params.id).exec();
+    const role = await roleModel.findById(req.id).exec();
     return res.status(200).json({ result: role, message: "Success" });
   } catch (err) {
     console.log(err);
@@ -53,8 +53,8 @@ const getRole = async (req, res) => {
  */
 const createRole = async (req, res) => {
   try {
-    let { name, clearance } = req.body;
-    if (!name || !clearance) {
+    let { name, memberType } = req.body;
+    if (!name || !memberType) {
       return res
         .status(400)
         .json({
@@ -62,7 +62,7 @@ const createRole = async (req, res) => {
           message: "Role name and clearance are required",
         });
     }
-    const role = await roleModel.create({ name, clearance });
+    const role = await roleModel.create({ name, memberType });
     return res.status(200).json({ result: role, message: "Success" });
   } catch (err) {
     console.log(err);
@@ -92,8 +92,8 @@ const createRole = async (req, res) => {
  */
 const updateRole = async (req, res) => {
   try {
-    let { id, name, clearance } = req.body;
-    if (!name || !clearance) {
+    let { id, name, memberType } = req.body;
+    if (!name || !memberType) {
       return res
         .status(400)
         .json({
@@ -108,7 +108,7 @@ const updateRole = async (req, res) => {
         .json({ result: null, message: `Invalid role id ${id}` });
     }
     const role = await roleModel
-      .findByIdAndUpdate(id, { name, clearance }, { new: true })
+      .findByIdAndUpdate(id, { name, memberType }, { new: true })
       .exec();
     return res.status(200).json({ result: role, message: "Success" });
   } catch (err) {

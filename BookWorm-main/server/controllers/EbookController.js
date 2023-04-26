@@ -111,7 +111,8 @@ try{
     coverImageURL,
     availableCopies,
     formatType,
-    filePath
+    filePath,
+      pdf // string to the url of the pdf
   } = req.body;
   const maxAvailableCopies = 0;
 
@@ -127,7 +128,8 @@ try{
       !coverImageURL ||
       !availableCopies ||
       !formatType ||
-      !filePath
+      !filePath ||
+      !pdf
   ) {
     return res.status(400).json({message: "Missing inputs"});
   }
@@ -738,8 +740,8 @@ function returnBook(userReturningID,eBookToReturnId){
     return res.status(400).json({ message: "You do not currently have that book, return failed" });
   }
   let eBookToReturn = eBookModel.findById(eBookToReturnId);
-  (eBookToReturn).availableCopies++; //Increase available copies to reflect the return
-  (userReturning).checkedOutBookIds.splice(positionOfBook, 1);
+  eBookToReturn.availableCopies++; //Increase available copies to reflect the return
+  userReturning.checkedOutBookIds.splice(positionOfBook, 1);
 
 
   //Add ebook to the user that is next in line in the queue (if it is not empty for this book)
@@ -762,34 +764,105 @@ function returnBook(userReturningID,eBookToReturnId){
 
 }
 
-function getOverdueBooks() {
+// async function getOverdueBooks() {
+//   // const now = new Date();
+//   // const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+//   /*
+//   let user2 = userModel.findById('641d0ab91cb282514bb99bba',function(err, docs) {
+//     if(err){
+//       console.log(err);
+//     }
+//     else{
+//       console.log(docs);
+//       return docs;
+//     }
+//   });
+//   //console.log(user2);
+//   */
+//   //let userstest = [{"_id":{"$oid": "641d0a14fb81ab902b98f400"},"roles": [3],"dateOfBirth":"01/01/2001","firstName":"Moishe","lastName":"Lerner","userName":"MLerner","password":"Moishe123","loginAttempts":0,"checkedOutBookIds":[],"status":"Normal","email1":"moishe@gmail.com"}]
+//   //console.log(userModel.find());
+//   //return userModel.findById("641d0a14fb81ab902b98f400");//.where((u) => !u.ebooks.isEmpty());//.filter(user =>
+//     //user.checkedOutBookIds.filter(book => book.checkoutDate && (book.checkoutDate < twoWeeksAgo)));
+//   const now = new Date();
+//   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+//
+//   const sampleUser = await userModel.findOne({ _id: '643f5b722406dbc0f2837935' });
+//
+//   return sampleUser.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);  //Filter books from each user where the book is overdue
+// }
+
+
+// function to get users that have overdue ebooks
+//Another function to get overdue ebooks from the user
+async function getOverdueBooksWithUser() {
   const now = new Date();
   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  /*
-  let user2 = userModel.findById('641d0ab91cb282514bb99bba',function(err, docs) {
-    if(err){
-      console.log(err);
+
+  // Find all users who have overdue books
+  const usersWithOverdueBooks = await userModel.find({ "checkedOutBookIds.checkoutDate": { $lt: twoWeeksAgo } });
+
+  // Create an array of objects containing information about each overdue book and its associated user
+  const overdueBooks = [];
+  for (const user of usersWithOverdueBooks) {
+    for (const book of user.checkedOutBookIds) {
+      if (book.checkoutDate < twoWeeksAgo) {
+        overdueBooks.push({
+          book: book,
+          user: user
+        });
+      }
     }
-    else{
-      console.log(docs);
-      return docs;
-    }
-  });
-  //console.log(user2);
-  */
-  let userstest = [{"_id":{"$oid":"641d0a14fb81ab902b98f400"},"roles":"[3]","dateOfBirth":"01/01/2001","firstName":"Moishe","lastName":"Lerner","userName":"MLerner","password":"Moishe123","loginAttempts":"0","checkedOutBookIds":[],"status":"Normal","email1":"moishe@gmail.com"}]
-  console.log(userModel.find());
-  return userstest.filter(user => 
-    user.checkedOutBookIds.filter(book => book.checkoutDate && (book.checkoutDate < twoWeeksAgo)));
+  }
+
+  return overdueBooks;
 }
 
-
-function returnOverdueBooks() {
-  const overdueBooks = getOverdueBooks();
-  overdueBooks.forEach(user => {
-    user.checkedOutBookIds.forEach(book => returnBook(user._id, book._id));
-  });
+// async function returnOverdueBooks() {
+//   const usersWithOverdueBooks = await getUsersWithOverdueBooks();
+//   const now = new Date();
+//   const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+//   for (const user of usersWithOverdueBooks) {
+//     const currOverdueBooks = user.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);//await returnBook(book.userId, book._id);
+//     for(const booksToBeReturned of currOverdueBooks) {
+//       returnBook(user._id, booksToBeReturned._id)
+//     }
+//   }
+// }
+async function returnOverdueBooks() {
+  const overdueBooksWithUsers = await getOverdueBooksWithUser();
+  const now = new Date();
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  for (const overdueEbook of overdueBooksWithUsers) {
+    console.log(overdueEbook);
+    returnBook(overdueEbook.user._id, overdueEbook.book._id)
+    //if (overdueEbook) { // Add a check for undefined or null
+      //const currOverdueBooks = user.checkedOutBookIds.filter(book => book.checkoutDate && book.checkoutDate < twoWeeksAgo);
+      // for(const booksToBeReturned of currOverdueBooks) {
+      //   returnBook(user._id, booksToBeReturned._id)
+      // }
+    //}
+  }
 }
+
+// function returnOverdueBooks() {
+  // const usersWithOverdueBooks = getUsersWithOverdueBooks();
+  // usersWithOverdueBooks.forEach(user => {
+  //   user.checkedOutBookIds.forEach(book => returnBook(user._id, book._id));
+  // });
+  // const twoWeeksInMillis = 14 * 24 * 60 * 60 * 1000
+  // const currentTime = new Date(Date.now());
+  // const timeDuration = new Date(currentTime.getTime() - twoWeeksInMillis)
+  // usersWithOverdueBooks.
+  // userModel.find({}, function (error, users) {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     users.forEach(function (user) {
+  //       user.checkedOutBookIds.filter()//console.log(user.firstName);
+  //     });
+  //   }
+  // });
+// }
 
 module.exports = {
   populateCatalog,

@@ -81,12 +81,6 @@ connectDB(dbConnectionUri);
 let client = new MongoClient(dbConnectionUri);
 const db = client.db("bookworm");
 
-// const getroles = async () => {
-//   roles = await roleModel.find({}).exec();
-//
-// }
-
-//console.log(roles);
 async function seedDatabase() {
 
   let rolesInDB = roleModel.countDocuments({}, {hint: "_id_"});
@@ -213,7 +207,7 @@ app.get('/search', function(req, res) {
     res.send(results);
   });
 });
-const { Hold } = require("./controllers/EbookController");
+
 const EbookController = require("./controllers/EbookController.js");
 app.patch('/Hold', (req, res) => {
   EBookController.Hold(req, res);
@@ -221,6 +215,7 @@ app.patch('/Hold', (req, res) => {
 // app.post('/Hold', bodyParser, (req, res) => {
 //   EBookController.Hold(req, res);
 // });
+
 app.post('/Add', (req, res) => {
   EBookController.addEbook(req, res);
 })
