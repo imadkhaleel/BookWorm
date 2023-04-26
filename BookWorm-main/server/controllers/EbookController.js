@@ -719,8 +719,9 @@ const Hold = async (req, res) => {
   }
   try{
     const eBookToHold = await eBookModel.findById(eBookToHoldId);
-    (await eBookToHold).holdQueue.push(userHolding._id);
+    eBookToHold.holdQueue.push(userHoldingId);
     console.log("You are #" + eBookToHold.holdQueue.length + " in line.");
+    eBookToHold.save();
     return res.status(200).json({result:"success", message:"You are #" + eBookToHold.holdQueue.length + " in line.",
                               ebook: eBookToHold,
                               user: userHoldingId});
