@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="SignUpScript.js"></script>
   <title>Sign Up</title>
   <style>
    body {
@@ -92,16 +93,17 @@
 <div class="container">
   <div class="box">
     <div class="image"></div>
-    <form>
+    <form id="signupForm">
       <h1>Sign Up</h1>
-      <input type="text" placeholder="Name">
-      <input type="text" placeholder="Email">
-      <input type="password" placeholder="Password">
+      <input type="text"  id="name" placeholder="Name">
+      <input type="text" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
       <input type="age" placeholder="Age">
-      <button>Sign Up</button>
+      <button id="signupBtn">Sign Up</button>
     </form>
   </div>
 </div>
 </body>
+<script src="SignUpScript.js"></script>
 </html>
 
