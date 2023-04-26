@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Book Titles</title>
-    <style>
-      body {
+<head>
+	<title>Home</title>
+	<style>
+		body {
 			font-family: Arial, sans-serif;
 			background-color: #f2f2f2;
 			margin: 0;
@@ -91,7 +91,7 @@
 		}
 		
 		.search button {
-			background-color: #4285F4;
+			background-color: rgb(35, 32, 32);
 			color: white;
 			font-size: 16px;
 			padding: 10px 20px;
@@ -106,7 +106,7 @@
 		}
 		
 		.footer {
-			position: absolute;
+      position: absolute;
             bottom: 0;
             width: 97.2%;
 			background-color: white;
@@ -155,97 +155,83 @@
   background-color: #ddd;
 }
 
+</style>
 
-      .xh1 {
-        font-size: 36px;
-        margin-top: 0;
-      }
-
-      .xul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .xli {
-        font-size: 20px;
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-      }
-    </style>
-  </head>
-  <body>
-    <header class="header">
-      <div class="logo">
-		<img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYIH3YSOeWJvvU6nd3E1nVgzIMHh0lcYMf5g&usqp=CAU alt="Google Logo">
-      </div>
-      <ul class="nav">
-      <li>
-        <a href="/home">Home</a>
-      <li>
-        
-          <form id="catalog-form" action="/catalog" method="POST">
-            <a href="#" onclick="document.getElementById('catalog-form').submit(); event.preventDefault();">Catalog</a>
-          </form>
-        
-        <li class="dropdown">
-          <a href="#">Account &#9662;</a>
-          <ul class="dropdown-content">
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+</head>
+<body>
+	<header class="header">
+		<div class="logo">
+			<img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYIH3YSOeWJvvU6nd3E1nVgzIMHh0lcYMf5g&usqp=CAU alt="Google Logo">
+		</div>
+		<ul class="nav">
+    <li>
+      <a href="/home">Home</a>
+    <li>
+      
+        <form id="catalog-form" action="/catalog" method="POST">
+          <a href="#" onclick="document.getElementById('catalog-form').submit(); event.preventDefault();">Catalog</a>
+        </form>
+      
+			<li class="dropdown">
+				<a href="#">Account &#9662;</a>
+				<ul class="dropdown-content">
+					<li>
+						<a href="#" onclick="submitForm('/login')">Sign in</a>
+						<form action="/login" method="POST" id="login-form">
+							<input type="hidden" name="account_action" value="login">
+						</form>
+					</li>
+					<li>
+						<a href="#" onclick="submitForm('/login')">Account details</a>
+						<form action="/login" method="POST" id="index-form">
+							<input type="hidden" name="account_action" value="index-details">
+						</form>
+					</li>
+					<li>
+						<form id="logout-form" action="/logout?_method=DELETE" method="POST">
+              <a href="#" onclick="document.getElementById('logout-form').submit(); event.preventDefault();">Log Out</a>
+            </form>   
             <li>
-              <a href="#" onclick="submitForm('/login')">Sign in</a>
-              <form action="/login" method="POST" id="login-form">
-                <input type="hidden" name="account_action" value="login">
-              </form>
-            </li>
-            <li>
-              <a href="#" onclick="submitForm('/login')">Account details</a>
-              <form action="/login" method="POST" id="index-form">
-                <input type="hidden" name="account_action" value="index-details">
-              </form>
-            </li>
-            <li>
-              <form id="logout-form" action="/logout?_method=DELETE" method="POST">
-                <a href="#" onclick="document.getElementById('logout-form').submit(); event.preventDefault();">Log Out</a>
-              </form>            
-              </form>
-            </li>
-		</form>   
-		<li>
-		  <a href="/accountactions">Account Actions</a>
-		</li>            
-		</form>
+              <a href="/accountactions">Account Actions</a>
+            </li>            
+            
+              
+						</form>
+					</li>
+         
+				</ul>
 			</li>
-          </ul>
-        </li>
-      </ul>
+		</ul>
+	</header>
 
-	  
-    </header>
-  
-<h1 class=".xh1">Book Titles</h1>
-<p>-</p>
-<h1 class=".xh1">Book Titles</h1>
-<form method="post" action="/search">
-	<input type="text" placeholder="Search..." id="searchInput" name="searchInput">
-	<button type="submit">Search</button>
-  </form>
-      <ul class =".xul">
-        <% bookTitles.forEach(function(bookTitle) { %>
-          <li class="xli"><%= bookTitle %></li>
-        <% }); %>
-      </ul class = ".xul">
-    </div>
+	<main class="main">
+		<div class="search">
+			<h1>Your favorite books. Anytime. Anywhere.</h1>
+      <form method="post" action="/search">
+        <input type="text" placeholder="Search..." id="searchInput" name="searchInput">
+        <button type="submit">Search</button>
+      </form>
+			
+		</div>
+	</main>
+
 	<footer class="footer">
 		<nav>
-		  <p>&copy; BookWorm LLC 2023</p>
+			<p>&copy; BookWorm LLC 2023</p>
 		</nav>
-	  </footer>
+	</footer>
 
-    <script>
+	<script>
 		function submitForm(action) {
 			const formId = '#' + action.substring(1) + '-form';
 			document.querySelector(formId).submit();
 		}
 	</script>
-  </body>
+</body>
 </html>
+
