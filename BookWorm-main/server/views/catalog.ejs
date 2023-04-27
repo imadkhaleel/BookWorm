@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Book Titles</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f8f8;
+      }
+
+      form {
+        margin-top: 20px;
+        margin-bottom: 30px;
+      }
+
+      input[type=text] {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button[type=submit] {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+      }
+
+      h1 {
+        font-size: 36px;
+        margin-top: 0;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        font-size: 20px;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form method="post" action="/search">
+        <input type="text" id="searchInput" name="searchInput">
+        <button type="submit">Search</button>
+      </form>
+
+      <h1>Book Titles</h1>
+      <ul>
+        <% bookTitles.forEach(function(bookTitle) { %>
+          <li><%= bookTitle %></li>
+        <% }); %>
+      </ul>
+    </div>
+  </body>
+</html>

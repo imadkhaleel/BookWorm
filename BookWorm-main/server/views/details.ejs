@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Book Details</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+      }
+      
+      h1 {
+        text-align: center;
+        font-size: 32px;
+        margin-top: 20px;
+      }
+      
+      table {
+        margin: 0 auto;
+        border-collapse: collapse;
+        width: 80%;
+        background-color: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      th, td {
+        text-align: left;
+        padding: 10px;
+        font-size: 16px;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      th {
+        background-color: #244a84;
+        color: white;
+      }
+      
+      img {
+        max-width: 200px;
+        max-height: 300px;
+      }
+
+      form {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  background-color: #244a84;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: #3d6abf;
+}
+    </style>
+  </head>
+  <body>
+    <h1>Book Details</h1>
+    <table>
+      <tr>
+        <tr>
+          <th>Cover Image</th>
+          <td><img src="<%= coverImageURL %>" alt="Book Cover"></td>
+        </tr>
+      </tr>
+      <tr>
+        <th>Title</th>
+        <td><%= title %></td>
+        
+      </tr>
+      <tr>
+        <th>Publisher</th>
+        <td><%= publisher %></td>
+      </tr>
+      <tr>
+        <th>Genre</th>
+        <td><%= genre %></td>
+      </tr>
+      <tr>
+        <th>Author</th>
+        <td><%= author %></td>
+      </tr>
+      <tr>
+        <th>Number of Pages</th>
+        <td><%= numberOfPages %></td>
+      </tr>
+      <tr>
+        <th>ISBN</th>
+        <td><%= ISBN %></td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td><%= description %></td>
+      </tr>
+      <tr>
+        <th>Publish Date</th>
+        <td><%= publishDate %></td>
+      </tr>
+      
+      <tr>
+        <th>Available Copies</th>
+        <td><%= availableCopies %></td>
+      </tr>
+    </table>
+
+    <form action="/logout?_method=DELETE" method="POST">
+      <button type="submit">Log Out</button>
+    </form>
+
+  </body>
+</html>

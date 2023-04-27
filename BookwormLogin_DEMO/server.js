@@ -204,6 +204,6 @@ function checkNotAuthenticated(req, res, next) {
       return res.redirect('/')
     }
     next()
-  }
+}
   
   app.listen(3000)

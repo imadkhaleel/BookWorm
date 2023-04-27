@@ -17,6 +17,9 @@ const passport = require('passport')
 const initializePassport= require('./passport-config')
 const methodOverride = require("method-override")
 const fs = require('fs');
+const flash = require("express-flash");
+const session = require('express-session');
+
 
 //Set up passport
 initializePassport(
@@ -28,21 +31,40 @@ initializePassport(
 // app.get("/", (req, res) => {
 //   res.sendFile(path.join(__dirname, "views/HomePage.html"));
 // });
-app.get('/', (req, res) => {
-  res.render('index.ejs', { name: "BookWorm"})
-})
-app.get("/login", (req, res) => {
+// app.get('/', checkAuthenticated(req, res), (req, res) => {
+//   res.render('index.ejs', { name: "BookWorm"})
+// })
+app.get('/', checkAuthenticated, (req, res) => {
+  res.render('index.ejs', {
+    name: "Joe",//req.user.name,
+    lastname: "WorksHard",//req.user.lastName,
+    email: "jk1839",//req.user.email,
+    id: 1//req.user.id
+  });
+});
+// app.get("/login", (req, res) => {
+//   res.render('login.ejs')
+// })
+app.get('/login', checkNotAuthenticated, (req, res) => {
   res.render('login.ejs')
 })
-app.post('/login', (req, res) => {
-  res.render('login.ejs', {messages: ""})
-})
-app.get('/register', (req, res) => {
+// app.post('/login', (req, res) => {
+//   res.render('login.ejs', {messages: ""})
+// })
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}))
+// app.get('/register', (req, res) => {
+//   res.render('register.ejs')
+// })
+app.get('/register', checkNotAuthenticated, (req, res) => {
   res.render('register.ejs')
-})
-app.post('/register', (req, res) => {
-  res.render('register.ejs', {messages: ""});
-})
+});
+// app.post('/register', (req, res) => {
+//   res.render('register.ejs', {messages: ""});
+// })
 app.delete('/logout', (req, res, next) => {
   req.logOut((err) => {
     if (err) {
@@ -76,6 +98,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(flash());
 app.use(methodOverride('_method'));
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
@@ -103,6 +126,7 @@ app.get('/search', function(req, res) {
 });
 const { Hold } = require("./controllers/EbookController");
 const path = require("path");
+//const {checkAuthenticated} = require("./controllers/AuthenticationController");
 app.post('/Hold', (req, res) => {
   EBookController.Hold(req, res);
 });
@@ -156,4 +180,19 @@ function setDB(env, port) {
   const db = client.db("bookworm");
   db.collection("ebook").findOneAndUpdate({_id: 6}, {$set: {"title": "Romeo and Juliet"}});
   return {port, db};
+}
+
+//Authentication functions
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  res.redirect('/login')
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/')
+  }
+  next()
 }
