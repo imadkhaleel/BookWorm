@@ -14,4 +14,4 @@ function LoadPdfFromUrl (url) {
     });
 };
 
-//LoadPdfFromUrl("https://example.com/PacMan_Ball_Manual.pdf");
+LoadPdfFromUrl("https://example.com/PacMan_Ball_Manual.pdf");
